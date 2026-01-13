@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
+  "type": "module",
   "scripts": {
     "start": "node src/main.js",
     "remotion": "remotion",

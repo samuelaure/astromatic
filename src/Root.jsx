@@ -1,5 +1,5 @@
 import { Composition } from "remotion";
-import { TemplateRegistry } from "./config/templates";
+import { TemplateRegistry } from "./config/templates.jsx";
 
 export const RemotionRoot = () => {
   return (

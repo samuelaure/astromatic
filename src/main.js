@@ -44,6 +44,8 @@ const run = async () => {
       serveUrl: bundled,
       outputLocation,
       inputProps: { ...payload, durationInFrames },
+      codec: "h264",
+      audioCodec: "aac",
     });
 
     // 4. Distribution

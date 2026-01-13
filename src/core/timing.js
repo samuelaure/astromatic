@@ -3,14 +3,14 @@
  * Average reading speed: 200-250 wpm.
  * For video, we target ~150 wpm to ensure readability.
  */
-const WORDS_PER_SECOND = 2.5;
+const WORDS_PER_SECOND = 3.6; // 216 wpm
 const FPS = 30;
-const MIN_DURATION_FRAMES = 45; // At least 1.5 seconds
+const MIN_DURATION_FRAMES = 30; // At least 1.5 seconds
 
 export function calculateSequenceDuration(text) {
   if (!text) return 0;
   const wordCount = text.split(/\s+/).length;
-  const durationInSeconds = Math.max(wordCount / WORDS_PER_SECOND, 1.5);
+  const durationInSeconds = Math.max(wordCount / WORDS_PER_SECOND, 1);
   return Math.round(durationInSeconds * FPS);
 }
 

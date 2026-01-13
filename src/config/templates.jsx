@@ -1,5 +1,5 @@
 import React from "react";
-import { MarketingV1 } from "../templates/MarketingV1";
+import { MarketingV1 } from "../templates/MarketingV1.jsx";
 
 export const TemplateRegistry = (props) => {
   const { templateId } = props;

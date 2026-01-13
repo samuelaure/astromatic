@@ -7,7 +7,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { calculateSequenceDuration } from "../core/timing";
+import { calculateSequenceDuration } from "../core/timing.js";
 
 const SAFE_ZONE_TOP = 250;
 const SAFE_ZONE_BOTTOM = 400;
@@ -15,6 +15,7 @@ const SAFE_ZONE_BOTTOM = 400;
 const TextBlock = ({
   text,
   style,
+  textStyle,
   width = "80%",
   height = 300,
   opacity = 1,
@@ -27,7 +28,7 @@ const TextBlock = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backgroundColor: "rgba(0, 0, 0, 0.45)",
         borderRadius: "24px",
         padding: "40px",
         boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
@@ -38,13 +39,14 @@ const TextBlock = ({
       <h1
         style={{
           margin: 0,
-          color: "#111",
+          color: "#fff",
           fontSize: "64px",
           textAlign: "center",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          lineHeight: 1.2,
+          fontFamily: "helvetica",
+          lineHeight: 1.4,
           // Using a basic scale-down logic for long text
           transform: text.length > 50 ? "scale(0.8)" : "scale(1)",
+          ...textStyle,
         }}
       >
         {text}
@@ -105,7 +107,7 @@ export const MarketingV1 = ({ backgroundUrl, sequences }) => {
         <AbsoluteFill
           style={{ justifyContent: "center", alignItems: "center" }}
         >
-          <TextBlock text={sequences.problem} width="80%" height={400} />
+          <TextBlock text={sequences.problem} width="90%" height={400} />
         </AbsoluteFill>
       </Sequence>
 
@@ -126,7 +128,7 @@ export const MarketingV1 = ({ backgroundUrl, sequences }) => {
               alignItems: "center",
             }}
           >
-            <TextBlock text={sequences.solution} width="75%" height={350} />
+            <TextBlock text={sequences.solution} width="90%" height={350} />
           </div>
 
           {/* CTA: Lower Half (appears at startCta) */}
@@ -141,9 +143,10 @@ export const MarketingV1 = ({ backgroundUrl, sequences }) => {
             {frame >= startCta && (
               <TextBlock
                 text={sequences.cta}
-                width="70%"
+                width="90%"
                 height={300}
-                style={{ backgroundColor: "#ffcc00" }}
+                style={{ backgroundColor: "rgba(255, 255, 255, 0.45)" }}
+                textStyle={{ color: "rgba(0, 0, 0, 1)" }}
               />
             )}
           </div>
