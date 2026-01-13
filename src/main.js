@@ -6,6 +6,7 @@ import { fetchData } from "./core/fetcher.js";
 import { uploadToFtp } from "./core/ftp.js";
 import { publishToInstagram } from "./core/instagram.js";
 import { notifyTelegram } from "./core/telegram.js";
+import { calculateTotalFrames } from "./core/timing.js";
 
 dotenv.config();
 
@@ -23,22 +24,26 @@ const run = async () => {
       process.env.TEMPLATE_ID,
     );
 
-    // 2. Prepare Composition
+    // 2. Prepare Composition with dynamic duration
     console.log("Bundling and selecting composition...");
     const bundled = await bundle(entry);
+
+    // Calculate duration based on text content
+    const durationInFrames = calculateTotalFrames(payload.sequences);
+
     const composition = await selectComposition({
       serveUrl: bundled,
       id: "Main",
-      inputProps: payload,
+      inputProps: { ...payload, durationInFrames },
     });
 
     // 3. Render
-    console.log("Rendering video...");
+    console.log(`Rendering video (${durationInFrames} frames)...`);
     await renderMedia({
       composition,
       serveUrl: bundled,
       outputLocation,
-      inputProps: payload,
+      inputProps: { ...payload, durationInFrames },
     });
 
     // 4. Distribution

@@ -22,10 +22,8 @@ export async function publishToInstagram(videoUrl, caption) {
 
   const creationId = container.data.id;
 
-  // 2. Wait for processing & Publish (Simplified for core)
-  // In production, we'd poll for status, but for core we trigger publish
-  // after a safety delay or status check.
-  await new Promise((res) => setTimeout(res, 30000)); // Safety wait for FB processing
+  // 2. Wait for processing & Publish
+  await new Promise((res) => setTimeout(res, 30000));
 
   await axios.post(
     `https://graph.facebook.com/v24.0/${IG_USER_ID}/media_publish`,
