@@ -4,7 +4,9 @@ import logger from "./logger.js";
 
 async function waitForMediaProcessing(containerId, maxRetries = 10) {
   for (let i = 0; i < maxRetries; i++) {
-    logger.info(`Checking media processing status (attempt ${i + 1}/${maxRetries})...`);
+    logger.info(
+      `Checking media processing status (attempt ${i + 1}/${maxRetries})...`,
+    );
     const response = await axios.get(
       `https://graph.facebook.com/v24.0/${containerId}`,
       {
@@ -69,7 +71,10 @@ export async function publishToInstagram(videoUrl, caption) {
       },
     );
 
-    logger.info({ publishId: publishResponse.data.id }, "Media published successfully.");
+    logger.info(
+      { publishId: publishResponse.data.id },
+      "Media published successfully.",
+    );
   } catch (error) {
     const errorData = error.response?.data || error.message;
     logger.error({ err: errorData }, "Instagram publication failed");

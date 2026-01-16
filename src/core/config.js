@@ -6,7 +6,7 @@ dotenv.config();
 const envSchema = z.object({
   WEBHOOK_URL: z.string().url(),
   TEMPLATE_ID: z.string().default("marketing-v1"),
-  
+
   // FTP
   FTP_HOST: z.string(),
   FTP_USER: z.string(),
@@ -22,7 +22,9 @@ const envSchema = z.object({
   TELEGRAM_CHAT_ID: z.string().optional(),
 
   // Environment
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
 });
 
 const _env = envSchema.safeParse(process.env);

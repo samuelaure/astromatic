@@ -7,7 +7,10 @@ export async function uploadToFtp(localPath) {
   const ftp = new PromiseFtp();
   const fileName = `video-${Date.now()}.mp4`;
 
-  logger.debug({ host: env.FTP_HOST, user: env.FTP_USER }, "Connecting to FTP...");
+  logger.debug(
+    { host: env.FTP_HOST, user: env.FTP_USER },
+    "Connecting to FTP...",
+  );
 
   try {
     await ftp.connect({

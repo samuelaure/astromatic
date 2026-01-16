@@ -1,12 +1,6 @@
 import React from "react";
-import {
-  AbsoluteFill,
-  Video,
-  Sequence,
-  useCurrentFrame,
-} from "remotion";
+import { AbsoluteFill, Video, Sequence, useCurrentFrame } from "remotion";
 import { calculateSequenceDuration } from "../core/timing.js";
-
 
 const SAFE_ZONE_TOP = 250;
 const SAFE_ZONE_BOTTOM = 400;

@@ -11,9 +11,15 @@ export async function fetchData(url, templateId, retries = 5) {
       return response.data;
     } catch (err) {
       const delay = Math.pow(2, i) * 1000;
-      logger.warn({ attempt: i + 1, delay, error: err.message }, "Webhook fetch failed, retrying...");
+      logger.warn(
+        { attempt: i + 1, delay, error: err.message },
+        "Webhook fetch failed, retrying...",
+      );
       if (i === retries - 1) {
-        logger.error({ error: err.message }, "Max retries reached for webhook fetch");
+        logger.error(
+          { error: err.message },
+          "Max retries reached for webhook fetch",
+        );
         throw err;
       }
       await new Promise((res) => setTimeout(res, delay));

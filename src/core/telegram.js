@@ -5,7 +5,9 @@ import logger from "./logger.js";
 export async function notifyTelegram(message) {
   const { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = env;
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    logger.debug("Telegram notification skipped: Bot token or Chat ID not provided.");
+    logger.debug(
+      "Telegram notification skipped: Bot token or Chat ID not provided.",
+    );
     return;
   }
 

@@ -23,7 +23,9 @@ const run = async () => {
     const payload = await fetchData(env.WEBHOOK_URL, env.TEMPLATE_ID);
 
     if (!payload || !payload.sequences) {
-      throw new Error("Invalid payload received from webhook: missing sequences");
+      throw new Error(
+        "Invalid payload received from webhook: missing sequences",
+      );
     }
 
     // 2. Prepare Composition with dynamic duration
