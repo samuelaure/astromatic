@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import path from "path";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
@@ -7,29 +6,33 @@ import { uploadToFtp } from "./core/ftp.js";
 import { publishToInstagram } from "./core/instagram.js";
 import { notifyTelegram } from "./core/telegram.js";
 import { calculateTotalFrames } from "./core/timing.js";
-
-dotenv.config();
+import { env } from "./core/config.js";
+import logger from "./core/logger.js";
 
 const run = async () => {
   const entry = path.resolve("src/index.js");
   const outputLocation = path.resolve("out/video.mp4");
 
+  logger.info("🚀 Astromatic: Starting automation cycle...");
+
   try {
     await notifyTelegram("🚀 <b>Astromatic:</b> Starting automation cycle...");
 
     // 1. Fetch Dynamic Content
-    console.log("Fetching payload from webhook...");
-    const payload = await fetchData(
-      process.env.WEBHOOK_URL,
-      process.env.TEMPLATE_ID,
-    );
+    logger.info("Fetching payload from webhook...");
+    const payload = await fetchData(env.WEBHOOK_URL, env.TEMPLATE_ID);
+
+    if (!payload || !payload.sequences) {
+      throw new Error("Invalid payload received from webhook: missing sequences");
+    }
 
     // 2. Prepare Composition with dynamic duration
-    console.log("Bundling and selecting composition...");
+    logger.info("Bundling and selecting composition...");
     const bundled = await bundle(entry);
 
     // Calculate duration based on text content
     const durationInFrames = calculateTotalFrames(payload.sequences);
+    logger.info({ durationInFrames }, "Calculated composition duration");
 
     const composition = await selectComposition({
       serveUrl: bundled,
@@ -38,7 +41,7 @@ const run = async () => {
     });
 
     // 3. Render
-    console.log(`Rendering video (${durationInFrames} frames)...`);
+    logger.info(`Rendering video (${durationInFrames} frames)...`);
     await renderMedia({
       composition,
       serveUrl: bundled,
@@ -47,17 +50,21 @@ const run = async () => {
       codec: "h264",
       audioCodec: "aac",
     });
+    logger.info("Render complete.");
 
     // 4. Distribution
-    console.log("Uploading to FTP...");
+    logger.info("Uploading to FTP...");
     const publicUrl = await uploadToFtp(outputLocation);
+    logger.info({ publicUrl }, "File uploaded to FTP");
 
-    console.log("Publishing to Instagram...");
+    logger.info("Publishing to Instagram...");
     await publishToInstagram(publicUrl, payload.caption);
+    logger.info("Published to Instagram successfully.");
 
     await notifyTelegram("✅ <b>Astromatic:</b> Cycle completed successfully!");
+    logger.info("✅ Automation cycle finished.");
   } catch (error) {
-    console.error("Critical failure:", error);
+    logger.error({ err: error }, "Critical failure in automation pipeline");
     await notifyTelegram(`❌ <b>Astromatic Error:</b>\n${error.message}`);
     process.exit(1);
   }

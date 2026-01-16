@@ -5,7 +5,6 @@
  */
 const WORDS_PER_SECOND = 3.6; // 216 wpm
 const FPS = 30;
-const MIN_DURATION_FRAMES = 30; // At least 1.5 seconds
 
 export function calculateSequenceDuration(text) {
   if (!text) return 0;

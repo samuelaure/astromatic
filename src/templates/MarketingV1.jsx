@@ -3,11 +3,10 @@ import {
   AbsoluteFill,
   Video,
   Sequence,
-  interpolate,
   useCurrentFrame,
-  useVideoConfig,
 } from "remotion";
 import { calculateSequenceDuration } from "../core/timing.js";
+
 
 const SAFE_ZONE_TOP = 250;
 const SAFE_ZONE_BOTTOM = 400;
@@ -57,7 +56,6 @@ const TextBlock = ({
 
 export const MarketingV1 = ({ backgroundUrl, sequences }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
 
   // Timing logic
   const hookDuration = calculateSequenceDuration(sequences.hook);
