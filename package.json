@@ -1,6 +1,6 @@
 {
   "name": "astromatic",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
   "type": "module",
