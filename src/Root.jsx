@@ -13,7 +13,7 @@ export const RemotionRoot = () => {
         height={1920}
         defaultProps={{
           templateId: "attention-v1",
-          backgroundUrl: "https://assets.mixkit.co/videos/preview/mixkit-starry-night-sky-with-clouds-transiting-4340-large.mp4",
+          backgroundUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
           sequences: {
             hook: "Connecting Families Through The Stars",
             problem: "Losing touch with your lineage in a busy world?",
