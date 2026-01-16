@@ -12,16 +12,18 @@ export const RemotionRoot = () => {
         width={1080}
         height={1920}
         defaultProps={{
-          templateId: "attention-v1",
-          backgroundUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+          templateId: "reel-v1",
+          backgroundUrl: "", // Will fallback to the local video in ReelV1
           sequences: {
-            hook: "Connecting Families Through The Stars",
-            problem: "Losing touch with your lineage in a busy world?",
-            solution: "Astromatic creates personalized cosmic ancestry maps.",
-            cta: "Discover Your Legacy",
+            hook: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            problem:
+              "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            solution:
+              "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+            cta: "Duis aute irure dolor in reprehenderit.",
           },
         }}
-      // The render process will override durationInFrames based on calculateTotalFrames
+        // The render process will override durationInFrames based on calculateTotalFrames
       />
     </>
   );
