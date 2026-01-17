@@ -57,8 +57,7 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
   const { hook, problem, solution, cta } = sequences;
 
   // Use local file as fallback if backgroundUrl is not provided
-  const videoSrc =
-    backgroundUrl || staticFile("18254971-uhd_2160_3840_30fps.mp4");
+  const videoSrc = backgroundUrl || staticFile("background.mp4");
 
   const hookDuration = calculateSequenceDuration(hook);
   const problemDuration = calculateSequenceDuration(problem);

@@ -13,6 +13,11 @@ const envSchema = z.object({
   FTP_PASSWORD: z.string(),
   PUBLIC_VIDEO_BASE_URL: z.string().url(),
 
+  // Airtable
+  AIRTABLE_TOKEN: z.string(),
+  AIRTABLE_BASE_ID: z.string().default("appEVPrTtF1XyAQ4h"),
+  AIRTABLE_TABLE_ID: z.string().default("tblC7lVTkY0ftzNoS"),
+
   // Instagram
   IG_TOKEN: z.string(),
   IG_USER_ID: z.string(),
