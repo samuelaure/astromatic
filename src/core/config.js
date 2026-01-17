@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const envSchema = z.object({
-  WEBHOOK_URL: z.string().url(),
-  TEMPLATE_ID: z.string().default("marketing-v1"),
 
   // FTP
   FTP_HOST: z.string(),
