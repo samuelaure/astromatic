@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const envSchema = z.object({
-
   // FTP
   FTP_HOST: z.string(),
   FTP_USER: z.string(),

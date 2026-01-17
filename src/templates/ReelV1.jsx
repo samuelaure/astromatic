@@ -7,6 +7,7 @@ import {
   interpolate,
   useCurrentFrame,
   useVideoConfig,
+  Loop,
 } from "remotion";
 import { calculateSequenceDuration } from "../core/timing.js";
 
@@ -55,6 +56,7 @@ const SimpleText = ({ text, duration }) => {
 
 export const ReelV1 = ({ backgroundUrl, sequences }) => {
   const { hook, problem, solution, cta } = sequences;
+  const { durationInFrames } = useVideoConfig();
 
   // Use local file as fallback if backgroundUrl is not provided
   const videoSrc = backgroundUrl || staticFile("background.mp4");
@@ -70,17 +72,19 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      {/* Background Video */}
+      {/* Background Video Layer with Looping */}
       <AbsoluteFill>
-        <Video
-          src={videoSrc}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-          muted
-        />
+        <Loop durationInFrames={120}>
+          <Video
+            src={videoSrc}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+            muted
+          />
+        </Loop>
         {/* Dark Overlay for readability */}
         <div
           style={{
