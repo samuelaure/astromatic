@@ -1,11 +1,12 @@
 {
   "name": "astromatic",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
   "type": "module",
   "scripts": {
     "start": "node src/main.js",
+    "dev": "node src/dev.js",
     "remotion": "remotion",
     "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
     "test": "jest",
