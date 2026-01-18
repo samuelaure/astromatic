@@ -103,6 +103,7 @@ export const ReelV1 = ({
   videoIndex1 = 1,
   videoIndex2 = 2,
   musicIndex = 1,
+  r2BaseUrl = "", // Base public URL for assets on R2
 }) => {
   const { hook, problem, solution, cta } = sequences;
   const { durationInFrames } = useVideoConfig();
@@ -116,18 +117,22 @@ export const ReelV1 = ({
   const t2 = t1 + problemDuration;
   const t3 = t2 + solutionDuration;
 
-  // Background Videos from public/background_videos/
-  const bg1 = staticFile(
-    `background_videos/astro-background-video-${videoIndex1}.mp4`,
-  );
-  const bg2 = staticFile(
-    `background_videos/astro-background-video-${videoIndex2}.mp4`,
-  );
+  // Helper to pad numbers to 4 digits
+  const pad = (n) => String(n).padStart(4, "0");
 
-  // Background Music from public/background_music/
-  const music = staticFile(
-    `background_music/astro-background-music-${musicIndex}.mp3`,
-  );
+  // Background Videos from R2 (with local fallback)
+  const bg1 = r2BaseUrl
+    ? `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
+    : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
+
+  const bg2 = r2BaseUrl
+    ? `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
+    : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
+
+  // Background Music from R2 (with local fallback)
+  const music = r2BaseUrl
+    ? `${r2BaseUrl}/astrologia_familiar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
+    : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
   return (
     <AbsoluteFill>

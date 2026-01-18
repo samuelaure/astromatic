@@ -4,12 +4,19 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const envSchema = z.object({
-  // FTP
-  FTP_HOST: z.string(),
-  FTP_USER: z.string(),
-  FTP_PASSWORD: z.string(),
+  // Cloudflare R2 (S3 Compatible)
+  R2_ACCESS_KEY_ID: z.string(),
+  R2_SECRET_ACCESS_KEY: z.string(),
+  R2_ENDPOINT: z.string().url(),
+  R2_BUCKET_NAME: z.string(),
+  R2_PUBLIC_URL: z.string().url(),
+
+  // FTP (Optional now, but keeping for backward compatibility)
+  FTP_HOST: z.string().optional(),
+  FTP_USER: z.string().optional(),
+  FTP_PASSWORD: z.string().optional(),
   FTP_REMOTE_PATH: z.string().default("public_html/ig/astrologia_familiar"),
-  PUBLIC_VIDEO_BASE_URL: z.string().url(),
+  PUBLIC_VIDEO_BASE_URL: z.string().url().optional(),
 
   // Airtable
   AIRTABLE_TOKEN: z.string(),

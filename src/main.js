@@ -6,7 +6,7 @@ import {
   fetchApprovedRecord,
   updateRecordToProcessed,
 } from "./core/airtable.js";
-import { uploadToFtp } from "./core/ftp.js";
+import { uploadToR2 } from "./core/s3.js";
 import { publishToInstagram } from "./core/instagram.js";
 import { notifyTelegram } from "./core/telegram.js";
 import { calculateTotalFrames } from "./core/timing.js";
@@ -65,6 +65,7 @@ const run = async () => {
     const durationInFrames = calculateTotalFrames(payload.sequences);
     logger.info({ durationInFrames }, "Calculated composition duration");
 
+    // Construct common input props
     const inputProps = {
       ...payload,
       templateId: "reel-v1",
@@ -72,6 +73,7 @@ const run = async () => {
       videoIndex2,
       musicIndex,
       durationInFrames,
+      r2BaseUrl: env.R2_PUBLIC_URL.replace(/\/$/, ""), // Ensure no trailing slash
     };
 
     const composition = await selectComposition({
@@ -95,10 +97,20 @@ const run = async () => {
     });
     logger.info("Render complete.");
 
-    // 5. Distribution
-    logger.info("Uploading to FTP...");
-    const publicUrl = await uploadToFtp(outputLocation);
-    logger.info({ publicUrl }, "File uploaded to FTP");
+    // 5. Distribution (Cloudflare R2)
+    logger.info("Uploading to Cloudflare R2...");
+
+    // Generate formatted timestamp: YYYYMMDD_HHMMSS
+    const now = new Date();
+    const timestamp = now
+      .toISOString()
+      .replace(/[-T:]/g, "")
+      .split(".")[0]
+      .replace(/(\d{8})(\d{6})/, "$1_$2");
+    const remoteKey = `astrologia_familiar/outputs/ASFA_OUTPUT_${timestamp}.mp4`;
+
+    const publicUrl = await uploadToR2(outputLocation, remoteKey);
+    logger.info({ publicUrl }, "File uploaded to R2");
 
     logger.info("Publishing to Instagram...");
     await publishToInstagram(publicUrl, payload.caption);

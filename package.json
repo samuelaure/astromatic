@@ -1,6 +1,6 @@
 {
   "name": "astromatic",
-  "version": "1.6.3",
+  "version": "2.0.0",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
   "type": "module",
@@ -14,6 +14,7 @@
     "render": "remotion render src/index.js Main out/video.mp4"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.971.0",
     "@remotion/bundler": "^4.0.0",
     "@remotion/google-fonts": "^4.0.407",
     "@remotion/renderer": "^4.0.0",
