@@ -7,21 +7,20 @@ import {
   interpolate,
   useCurrentFrame,
   useVideoConfig,
-  Loop,
 } from "remotion";
-import { calculateSequenceDuration } from "../core/timing.js";
+import { calculateSequenceDuration, TAIL_FRAMES } from "../core/timing.js";
 
 const FONT_FAMILY =
   "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-const SimpleText = ({ text, duration }) => {
+const SimpleText = ({ text, duration, noFadeIn = false }) => {
   const frame = useCurrentFrame();
 
   // Fade in and out
   const opacity = interpolate(
     frame,
-    [0, 10, duration - 10, duration],
-    [0, 1, 1, 0],
+    [0, noFadeIn ? 0 : 10, duration - 10, duration],
+    [noFadeIn ? 1 : 0, 1, 1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
@@ -64,7 +63,7 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
   const hookDuration = calculateSequenceDuration(hook);
   const problemDuration = calculateSequenceDuration(problem);
   const solutionDuration = calculateSequenceDuration(solution);
-  const ctaDuration = calculateSequenceDuration(cta);
+  const ctaDuration = calculateSequenceDuration(cta) + TAIL_FRAMES;
 
   const t1 = hookDuration;
   const t2 = t1 + problemDuration;
@@ -72,19 +71,18 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      {/* Background Video Layer with Looping */}
+      {/* Background Video Layer with native looping enabled */}
       <AbsoluteFill>
-        <Loop durationInFrames={120}>
-          <Video
-            src={videoSrc}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-            muted
-          />
-        </Loop>
+        <Video
+          src={videoSrc}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+          muted
+          loop
+        />
         {/* Dark Overlay for readability */}
         <div
           style={{
@@ -95,9 +93,9 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
         />
       </AbsoluteFill>
 
-      {/* Sequence 1: Hook */}
+      {/* Sequence 1: Hook - No fade in to ensure it shows on frame 0 for the cover */}
       <Sequence from={0} durationInFrames={hookDuration}>
-        <SimpleText text={hook} duration={hookDuration} />
+        <SimpleText text={hook} duration={hookDuration} noFadeIn={true} />
       </Sequence>
 
       {/* Sequence 2: Problem */}
@@ -110,7 +108,7 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
         <SimpleText text={solution} duration={solutionDuration} />
       </Sequence>
 
-      {/* Sequence 4: CTA */}
+      {/* Sequence 4: CTA - Extended to stay on screen until the very end */}
       <Sequence from={t3} durationInFrames={ctaDuration}>
         <SimpleText text={cta} duration={ctaDuration} />
       </Sequence>
