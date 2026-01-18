@@ -1,6 +1,6 @@
 {
   "name": "astromatic",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
   "type": "module",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@remotion/bundler": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.407",
     "@remotion/renderer": "^4.0.0",
     "axios": "^1.6.0",
     "dotenv": "^16.3.0",

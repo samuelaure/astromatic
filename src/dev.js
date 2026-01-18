@@ -26,18 +26,32 @@ const runDev = async () => {
 
     logger.info({ recordId: payload.id }, "Testing with Airtable record...");
 
-    // 2. Random Background Selection
-    const randomNum = Math.floor(Math.random() * 28) + 1;
-    const videoFileName = `astro-background-${randomNum}.mp4`;
-    const sourceVideoPath = path.join(DESKTOP_VIDEO_DIR, videoFileName);
-    const targetVideoPath = path.join(PUBLIC_DIR, "background.mp4");
-
-    if (!fs.existsSync(sourceVideoPath)) {
-      throw new Error(`Background video not found: ${sourceVideoPath}`);
+    // 2. Random Background Selection (Dual Video)
+    if (fs.existsSync(outputLocation)) {
+      try {
+        fs.unlinkSync(outputLocation);
+      } catch (e) {
+        throw new Error(
+          `Could not delete ${outputLocation}. Please close any program (like VLC or Windows Media Player) that is using it.`
+        );
+      }
     }
 
-    logger.info({ sourceVideoPath }, "Copying random background video...");
-    fs.copyFileSync(sourceVideoPath, targetVideoPath);
+    const selectRandomVideo = () => Math.floor(Math.random() * 28) + 1;
+    const rnd1 = selectRandomVideo();
+    let rnd2 = selectRandomVideo();
+    while (rnd2 === rnd1) rnd2 = selectRandomVideo(); // Ensure they are different
+
+    const source1 = path.join(DESKTOP_VIDEO_DIR, `astro-background-${rnd1}.mp4`);
+    const source2 = path.join(DESKTOP_VIDEO_DIR, `astro-background-${rnd2}.mp4`);
+
+    if (!fs.existsSync(source1) || !fs.existsSync(source2)) {
+      throw new Error(`One or more background videos not found in ${DESKTOP_VIDEO_DIR}`);
+    }
+
+    logger.info({ rnd1, rnd2 }, "Copying dual background videos...");
+    fs.copyFileSync(source1, path.join(PUBLIC_DIR, "background1.mp4"));
+    fs.copyFileSync(source2, path.join(PUBLIC_DIR, "background2.mp4"));
 
     // 3. Prepare Composition
     logger.info("Bundling and selecting composition...");
@@ -57,6 +71,9 @@ const runDev = async () => {
         durationInFrames,
       },
     });
+
+    // Override hardcoded composition duration with dynamic calculation
+    composition.durationInFrames = durationInFrames;
 
     // 4. Render Locally
     logger.info(`Rendering test video to ${outputLocation}...`);
