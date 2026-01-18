@@ -1,4 +1,3 @@
-import React from "react";
 import {
   AbsoluteFill,
   OffthreadVideo,
@@ -8,6 +7,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
   Loop,
+  Audio,
 } from "remotion";
 import { loadFont as loadFraunces } from "@remotion/google-fonts/Fraunces";
 import { loadFont as loadRaleway } from "@remotion/google-fonts/Raleway";
@@ -98,12 +98,14 @@ const SimpleText = ({
   );
 };
 
-export const ReelV1 = ({ backgroundUrl, sequences }) => {
+export const ReelV1 = ({
+  sequences,
+  videoIndex1 = 1,
+  videoIndex2 = 2,
+  musicIndex = 1,
+}) => {
   const { hook, problem, solution, cta } = sequences;
   const { durationInFrames } = useVideoConfig();
-
-  // Use local file as fallback if backgroundUrl is not provided
-  const videoSrc = backgroundUrl || staticFile("background.mp4");
 
   const hookDuration = calculateSequenceDuration(hook);
   const problemDuration = calculateSequenceDuration(problem);
@@ -114,13 +116,26 @@ export const ReelV1 = ({ backgroundUrl, sequences }) => {
   const t2 = t1 + problemDuration;
   const t3 = t2 + solutionDuration;
 
-  // Determine background sources
-  // We use staticFile for our local randomization logic
-  const bg1 = staticFile("background1.mp4");
-  const bg2 = staticFile("background2.mp4");
+  // Background Videos from public/background_videos/
+  const bg1 = staticFile(
+    `background_videos/astro-background-video-${videoIndex1}.mp4`,
+  );
+  const bg2 = staticFile(
+    `background_videos/astro-background-video-${videoIndex2}.mp4`,
+  );
+
+  // Background Music from public/background_music/
+  const music = staticFile(
+    `background_music/astro-background-music-${musicIndex}.mp3`,
+  );
 
   return (
     <AbsoluteFill>
+      {/* Background Audio: Looped to cover the entire duration */}
+      <Loop durationInFrames={durationInFrames}>
+        <Audio src={music} volume={0.5} />
+      </Loop>
+
       {/* Background Layer 1: Start to T2 (Solution Start) */}
       <Sequence from={0} durationInFrames={t2}>
         <AbsoluteFill>

@@ -13,9 +13,6 @@ import { calculateTotalFrames } from "./core/timing.js";
 import { env } from "./core/config.js";
 import logger from "./core/logger.js";
 
-const DESKTOP_VIDEO_DIR = "C:\\Users\\Sam\\Desktop\\ASTRO";
-const PUBLIC_DIR = path.resolve("public");
-
 const run = async () => {
   const entry = path.resolve("src/index.js");
   const outputLocation = path.resolve("out/video.mp4");
@@ -35,7 +32,7 @@ const run = async () => {
       `🚀 <b>Astromatic:</b> Starting cycle for record ${payload.id}...`,
     );
 
-    // 2. Random Background Selection (Dual Video)
+    // Ensure output directory exists and old file is removed
     if (fs.existsSync(outputLocation)) {
       try {
         fs.unlinkSync(outputLocation);
@@ -46,29 +43,19 @@ const run = async () => {
       }
     }
 
-    const selectRandomVideo = () => Math.floor(Math.random() * 28) + 1;
-    const rnd1 = selectRandomVideo();
-    let rnd2 = selectRandomVideo();
-    while (rnd2 === rnd1) rnd2 = selectRandomVideo(); // Ensure they are different
+    // 2. Random Background & Music Selection
+    const selectRandom = (max) => Math.floor(Math.random() * max) + 1;
 
-    const source1 = path.join(
-      DESKTOP_VIDEO_DIR,
-      `astro-background-${rnd1}.mp4`,
+    const videoIndex1 = selectRandom(28);
+    let videoIndex2 = selectRandom(28);
+    while (videoIndex2 === videoIndex1) videoIndex2 = selectRandom(28); // Ensure they are different
+
+    const musicIndex = selectRandom(10);
+
+    logger.info(
+      { videoIndex1, videoIndex2, musicIndex },
+      "Selected random assets indices",
     );
-    const source2 = path.join(
-      DESKTOP_VIDEO_DIR,
-      `astro-background-${rnd2}.mp4`,
-    );
-
-    if (!fs.existsSync(source1) || !fs.existsSync(source2)) {
-      throw new Error(
-        `One or more background videos not found in ${DESKTOP_VIDEO_DIR}`,
-      );
-    }
-
-    logger.info({ rnd1, rnd2 }, "Copying dual background videos...");
-    fs.copyFileSync(source1, path.join(PUBLIC_DIR, "background1.mp4"));
-    fs.copyFileSync(source2, path.join(PUBLIC_DIR, "background2.mp4"));
 
     // 3. Prepare Composition
     logger.info("Bundling and selecting composition...");
@@ -78,15 +65,19 @@ const run = async () => {
     const durationInFrames = calculateTotalFrames(payload.sequences);
     logger.info({ durationInFrames }, "Calculated composition duration");
 
+    const inputProps = {
+      ...payload,
+      templateId: "reel-v1",
+      videoIndex1,
+      videoIndex2,
+      musicIndex,
+      durationInFrames,
+    };
+
     const composition = await selectComposition({
       serveUrl: bundled,
       id: "Main",
-      inputProps: {
-        ...payload,
-        templateId: "reel-v1", // Using the designated Reel template
-        backgroundUrl: "", // Triggers fallback to public/background.mp4 in ReelV1
-        durationInFrames,
-      },
+      inputProps,
     });
 
     // Override hardcoded composition duration with dynamic calculation
@@ -98,12 +89,7 @@ const run = async () => {
       composition,
       serveUrl: bundled,
       outputLocation,
-      inputProps: {
-        ...payload,
-        templateId: "reel-v1",
-        backgroundUrl: "",
-        durationInFrames,
-      },
+      inputProps,
       codec: "h264",
       audioCodec: "aac",
     });
