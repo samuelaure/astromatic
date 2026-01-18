@@ -41,7 +41,7 @@ const run = async () => {
         fs.unlinkSync(outputLocation);
       } catch (e) {
         throw new Error(
-          `Could not delete ${outputLocation}. Please close any program (like VLC or Windows Media Player) that is using it.`
+          `Could not delete ${outputLocation}. Please close any program (like VLC or Windows Media Player) that is using it.`,
         );
       }
     }
@@ -51,11 +51,19 @@ const run = async () => {
     let rnd2 = selectRandomVideo();
     while (rnd2 === rnd1) rnd2 = selectRandomVideo(); // Ensure they are different
 
-    const source1 = path.join(DESKTOP_VIDEO_DIR, `astro-background-${rnd1}.mp4`);
-    const source2 = path.join(DESKTOP_VIDEO_DIR, `astro-background-${rnd2}.mp4`);
+    const source1 = path.join(
+      DESKTOP_VIDEO_DIR,
+      `astro-background-${rnd1}.mp4`,
+    );
+    const source2 = path.join(
+      DESKTOP_VIDEO_DIR,
+      `astro-background-${rnd2}.mp4`,
+    );
 
     if (!fs.existsSync(source1) || !fs.existsSync(source2)) {
-      throw new Error(`One or more background videos not found in ${DESKTOP_VIDEO_DIR}`);
+      throw new Error(
+        `One or more background videos not found in ${DESKTOP_VIDEO_DIR}`,
+      );
     }
 
     logger.info({ rnd1, rnd2 }, "Copying dual background videos...");

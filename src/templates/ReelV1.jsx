@@ -39,13 +39,11 @@ const SimpleText = ({
   const typingDuration = Math.min(30, duration - 20);
   const charsToShow = typewriter
     ? Math.floor(
-      interpolate(frame, [0, typingDuration], [0, text.length], {
-        extrapolateRight: "clamp",
-      }),
-    )
+        interpolate(frame, [0, typingDuration], [0, text.length], {
+          extrapolateRight: "clamp",
+        }),
+      )
     : text.length;
-
-  const displayedText = text.slice(0, charsToShow);
 
   // Opacity timing logic
   // If typewriter is on OR noFadeIn is true, we start at opacity 1 instantly.
@@ -85,7 +83,16 @@ const SimpleText = ({
           letterSpacing,
         }}
       >
-        {displayedText}
+        {text.split("").map((char, i) => (
+          <span
+            key={i}
+            style={{
+              opacity: i < charsToShow ? 1 : 0,
+            }}
+          >
+            {char}
+          </span>
+        ))}
       </h1>
     </div>
   );
