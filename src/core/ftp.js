@@ -8,8 +8,8 @@ export async function uploadToFtp(localPath) {
   const fileName = `video-${Date.now()}.mp4`;
 
   logger.debug(
-    { host: env.FTP_HOST, user: env.FTP_USER },
-    "Connecting to FTP...",
+    { host: env.FTP_HOST, user: env.FTP_USER, remotePath: env.FTP_REMOTE_PATH },
+    "Connecting to FTP and preparing remote directory...",
   );
 
   try {
@@ -19,6 +19,18 @@ export async function uploadToFtp(localPath) {
       password: env.FTP_PASSWORD,
     });
 
+    // Ensure remote directory exists
+    const folders = env.FTP_REMOTE_PATH.split("/").filter((f) => f);
+    for (const folder of folders) {
+      try {
+        await ftp.cwd(folder);
+      } catch (err) {
+        // Folder likely doesn't exist, try to create it
+        await ftp.mkdir(folder);
+        await ftp.cwd(folder);
+      }
+    }
+
     const stream = fs.createReadStream(localPath);
     await ftp.put(stream, fileName);
     await ftp.end();
@@ -27,6 +39,9 @@ export async function uploadToFtp(localPath) {
     return publicUrl;
   } catch (err) {
     logger.error({ err }, "FTP upload failed");
+    if (ftp.getConnectionStatus() !== "disconnected") {
+      await ftp.end();
+    }
     throw err;
   }
 }
