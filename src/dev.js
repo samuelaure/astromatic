@@ -14,6 +14,17 @@ const runDev = async () => {
   logger.info("🧪 [DEV MODE] Starting pipeline test (Render only)...");
 
   try {
+    // 0. Ensure old file is removed
+    if (fs.existsSync(outputLocation)) {
+      try {
+        fs.unlinkSync(outputLocation);
+      } catch (e) {
+        throw new Error(
+          `Could not delete ${outputLocation}. Please close any program (like VLC or Windows Media Player) that is using it.`,
+        );
+      }
+    }
+
     // 1. Fetch Approved Content from Airtable
     const payload = await fetchApprovedRecord();
 
