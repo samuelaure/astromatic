@@ -20,8 +20,12 @@ const envSchema = z.object({
 
   // Airtable
   AIRTABLE_TOKEN: z.string(),
-  AIRTABLE_BASE_ID: z.string().default("appEVPrTtF1XyAQ4h"),
-  AIRTABLE_TABLE_ID: z.string().default("tblC7lVTkY0ftzNoS"),
+  AIRTABLE_BASE_ID: z
+    .preprocess((val) => (val === "" ? undefined : val), z.string())
+    .default("appEVPrTtF1XyAQ4h"),
+  AIRTABLE_TABLE_ID: z
+    .preprocess((val) => (val === "" ? undefined : val), z.string())
+    .default("tblC7lVTkY0ftzNoS"),
 
   // Instagram
   IG_TOKEN: z.string(),
@@ -33,7 +37,10 @@ const envSchema = z.object({
 
   // Environment
   NODE_ENV: z
-    .enum(["development", "production", "test"])
+    .preprocess(
+      (val) => (val === "" ? undefined : val),
+      z.enum(["development", "production", "test"]),
+    )
     .default("development"),
 });
 
