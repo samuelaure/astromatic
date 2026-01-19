@@ -3,7 +3,7 @@ name: Astromatic Automation Cycle
 on:
   workflow_dispatch: # Allows manual trigger
   schedule:
-    - cron: '0 8 * * *' # Runs at 09:00 AM CET (08:00 UTC) every day
+    - cron: '0 10 * * *' # Runs at 11:00 AM CET (10:00 UTC) every day
 
 jobs:
   automation_cycle:
