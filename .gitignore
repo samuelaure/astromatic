@@ -1,57 +1,54 @@
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
 
-# Build artifacts
+# Testing
+coverage/
+
+# Production / Build
 dist/
-.next/
 out/
-generated/
+build/
+.next/
 
-# Other
-out/**
-public/**
-.agent/
-.cursorrules
-
-# TypeScript build info
-*.tsbuildinfo
+# Remotion
+# Ignore all videos in public/ as they are usually heavy assets
+# but keep the directory itself if needed
+public/background_videos/
+public/background_music/
+*.mp4
+*.m4a
+*.mp3
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 
-# Environment variables
+# Environment
 .env
-.env.development
-.env.test
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
-# IDEs and editors
+# IDEs
+.vscode/
 .idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# OS-specific
+# OS
 .DS_Store
 Thumbs.db
 
-# Test reports
-coverage/
-
-# Cypress artifacts
-/cypress/
-
-# Temporary files
-*.tmp
+# Agent/Cursor specific
+.agent/
+.cursorrules
