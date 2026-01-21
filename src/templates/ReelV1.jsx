@@ -60,15 +60,14 @@ const SimpleText = ({
   );
 
   return (
-    <div
+    <AbsoluteFill
       style={{
         opacity,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        flex: 1,
-        padding: "0 80px",
+        padding: "200px 140px 300px 140px",
       }}
     >
       <h1
@@ -94,7 +93,7 @@ const SimpleText = ({
           </span>
         ))}
       </h1>
-    </div>
+    </AbsoluteFill>
   );
 };
 
