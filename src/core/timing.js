@@ -6,7 +6,9 @@ export function calculateSequenceDuration(text) {
   if (!text) return 0;
   const wordCount = text.split(/\s+/).length;
   const durationInSeconds = Math.max(wordCount / WORDS_PER_SECOND, 1.2);
-  return Math.round(durationInSeconds * FPS);
+  const frames = Math.round(durationInSeconds * FPS);
+  // Cap at 9 seconds (270 frames) and ensure at least 1 second (30 frames)
+  return Math.min(Math.max(frames, 30), 270);
 }
 
 export function calculateTotalFrames(sequences) {

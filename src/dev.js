@@ -4,6 +4,7 @@ import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import { fetchApprovedRecord } from "./core/airtable.js";
 import { calculateTotalFrames } from "./core/timing.js";
+import { getVideoDuration } from "./core/metadata.js";
 import { env } from "./core/config.js";
 import logger from "./core/logger.js";
 
@@ -71,9 +72,30 @@ const runDev = async () => {
     while (videoIndex2 === videoIndex1) videoIndex2 = selectRandom(28);
     const musicIndex = selectRandom(10);
 
+    const r2BaseUrl = env.R2_PUBLIC_URL?.replace(/\/$/, "");
+    const pad = (n) => String(n).padStart(4, "0");
+
+    const getAssetSource = (index) => {
+      if (r2BaseUrl) {
+        return `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(index)}.mp4`;
+      }
+      return path.resolve(
+        `public/background_videos/astro-background-video-${index}.mp4`,
+      );
+    };
+
+    const bg1Source = getAssetSource(videoIndex1);
+    const bg2Source = getAssetSource(videoIndex2);
+
+    logger.info("Fetching video metadata for smart looping...");
+    const [video1Duration, video2Duration] = await Promise.all([
+      getVideoDuration(bg1Source),
+      getVideoDuration(bg2Source),
+    ]);
+
     logger.info(
-      { videoIndex1, videoIndex2, musicIndex },
-      "Selected random asset indices...",
+      { video1Duration, video2Duration },
+      "Metadata fetched using ffprobe",
     );
 
     // 3. Prepare Composition
@@ -89,9 +111,11 @@ const runDev = async () => {
       templateId: activeConfig.id,
       videoIndex1,
       videoIndex2,
+      video1Duration,
+      video2Duration,
       musicIndex,
       durationInFrames,
-      r2BaseUrl: env.R2_PUBLIC_URL.replace(/\/$/, ""),
+      r2BaseUrl: r2BaseUrl || "",
     };
 
     const composition = await selectComposition({

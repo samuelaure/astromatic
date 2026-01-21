@@ -10,6 +10,7 @@ import { uploadToR2 } from "./core/s3.js";
 import { publishToInstagram } from "./core/instagram.js";
 import { notifyTelegram } from "./core/telegram.js";
 import { calculateTotalFrames } from "./core/timing.js";
+import { getVideoDuration } from "./core/metadata.js";
 import { env } from "./core/config.js";
 import logger from "./core/logger.js";
 
@@ -83,9 +84,19 @@ const run = async () => {
     const vid2Name = `ASFA_VID_${pad(videoIndex2)}`;
     const audName = `ASFA_AUD_${pad(musicIndex)}`;
 
+    const r2BaseUrl = env.R2_PUBLIC_URL.replace(/\/$/, "");
+    const bg1Url = `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`;
+    const bg2Url = `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`;
+
+    logger.info("Fetching video metadata for smart looping...");
+    const [video1Duration, video2Duration] = await Promise.all([
+      getVideoDuration(bg1Url),
+      getVideoDuration(bg2Url),
+    ]);
+
     logger.info(
-      { videoIndex1, videoIndex2, musicIndex },
-      "Selected random assets indices",
+      { video1Duration, video2Duration },
+      "Metadata fetched using ffprobe",
     );
 
     // 3. Prepare Composition
@@ -102,9 +113,11 @@ const run = async () => {
       templateId: activeConfig.id,
       videoIndex1,
       videoIndex2,
+      video1Duration,
+      video2Duration,
       musicIndex,
       durationInFrames,
-      r2BaseUrl: env.R2_PUBLIC_URL.replace(/\/$/, ""),
+      r2BaseUrl,
     };
 
     const composition = await selectComposition({

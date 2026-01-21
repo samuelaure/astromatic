@@ -73,7 +73,7 @@ const SimpleText = ({
       <h1
         style={{
           fontFamily,
-          fontSize: "80px",
+          fontSize: "70px",
           color: "white",
           fontWeight,
           lineHeight: "1.2",
@@ -101,6 +101,8 @@ export const ASFAT1 = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,
+  video1Duration = 0,
+  video2Duration = 0,
   musicIndex = 1,
   r2BaseUrl = "", // Base public URL for assets on R2
 }) => {
@@ -115,6 +117,10 @@ export const ASFAT1 = ({
   const t1 = hookDuration;
   const t2 = t1 + problemDuration;
   const t3 = t2 + solutionDuration;
+
+  // Amount of time each background needs to fill
+  const fill1 = t2;
+  const fill2 = durationInFrames - t2;
 
   // Helper to pad numbers to 4 digits
   const pad = (n) => String(n).padStart(4, "0");
@@ -133,6 +139,33 @@ export const ASFAT1 = ({
     ? `${r2BaseUrl}/astrologia_familiar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
+  // Simple conditional loop component
+  const SmartVideo = ({ src, videoDuration, fillDuration }) => {
+    const vDuration = Math.round(videoDuration);
+    const fDuration = Math.round(fillDuration);
+
+    // If we have duration and it's shorter than what we need, loop it
+    if (vDuration > 0 && vDuration < fDuration) {
+      return (
+        <Loop durationInFrames={vDuration}>
+          <OffthreadVideo
+            src={src}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            muted
+          />
+        </Loop>
+      );
+    }
+    // Otherwise just play it
+    return (
+      <OffthreadVideo
+        src={src}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        muted
+      />
+    );
+  };
+
   return (
     <AbsoluteFill>
       {/* Background Audio: Looped to cover the entire duration */}
@@ -141,28 +174,24 @@ export const ASFAT1 = ({
       </Loop>
 
       {/* Background Layer 1: Start to T2 (Solution Start) */}
-      <Sequence from={0} durationInFrames={t2}>
+      <Sequence from={0} durationInFrames={fill1}>
         <AbsoluteFill>
-          <Loop durationInFrames={900}>
-            <OffthreadVideo
-              src={bg1}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              muted
-            />
-          </Loop>
+          <SmartVideo
+            src={bg1}
+            videoDuration={video1Duration}
+            fillDuration={fill1}
+          />
         </AbsoluteFill>
       </Sequence>
 
       {/* Background Layer 2: T2 to End */}
-      <Sequence from={t2} durationInFrames={durationInFrames - t2}>
+      <Sequence from={t2} durationInFrames={fill2}>
         <AbsoluteFill>
-          <Loop durationInFrames={900}>
-            <OffthreadVideo
-              src={bg2}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              muted
-            />
-          </Loop>
+          <SmartVideo
+            src={bg2}
+            videoDuration={video2Duration}
+            fillDuration={fill2}
+          />
         </AbsoluteFill>
       </Sequence>
 

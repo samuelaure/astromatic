@@ -52,24 +52,41 @@ const SimpleText = ({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "200px 140px 300px 140px",
+        padding: "0 180px", // Increased for better safe space
       }}
     >
-      <h1
-        style={{
-          fontFamily,
-          fontSize: "80px",
-          color: "white",
-          fontWeight,
-          lineHeight: "1.2",
-          textShadow: "0px 4px 10px rgba(0,0,0,0.5)",
-          margin: 0,
-          letterSpacing,
-        }}
-      >
-        {text}
-      </h1>
-      {children}
+      <div style={{ position: "relative", width: "100%" }}>
+        {/* Emoji positioned dynamically above the centered text */}
+        {children && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: "105%", // Always starts above the top of the text
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            {children}
+          </div>
+        )}
+
+        <h1
+          style={{
+            fontFamily,
+            fontSize: "70px",
+            color: "white",
+            fontWeight,
+            lineHeight: "1.2",
+            textShadow: "0px 4px 10px rgba(0,0,0,0.5)",
+            margin: 0,
+            letterSpacing,
+            zIndex: 1,
+          }}
+        >
+          {text}
+        </h1>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -77,16 +94,16 @@ const SimpleText = ({
 const DynamicMessage = ({ text, duration }) => {
   const frame = useCurrentFrame();
 
-  // Simple dynamic font sizing based on length
-  // 0-50 chars: 80px
-  // 50-150 chars: 60px
-  // 150-300 chars: 45px
-  // 300+ chars: 35px
+  // Granular dynamic font sizing to fit the container accurately across lengths
   const getFontSize = (len) => {
-    if (len < 50) return "80px";
-    if (len < 150) return "60px";
-    if (len < 300) return "45px";
-    return "35px";
+    if (len < 40) return "95px";
+    if (len < 80) return "85px";
+    if (len < 120) return "75px";
+    if (len < 180) return "65px";
+    if (len < 250) return "55px";
+    if (len < 350) return "45px";
+    if (len < 500) return "38px";
+    return "30px";
   };
 
   const opacity = interpolate(
@@ -104,22 +121,33 @@ const DynamicMessage = ({ text, duration }) => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "240px 120px 340px 120px",
+        padding: "240px 160px 340px 160px", // Reels Safe Zones + increased sides
       }}
     >
-      <p
+      <div
         style={{
-          fontFamily: ralewayFamily,
-          fontSize: getFontSize(text.length),
-          color: "white",
-          fontWeight: "400",
-          lineHeight: "1.4",
-          textShadow: "0px 2px 8px rgba(0,0,0,0.6)",
-          margin: 0,
+          width: "100%",
+          height: "100%", // Fixed container occupying safe vertical space
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {text}
-      </p>
+        <p
+          style={{
+            fontFamily: ralewayFamily,
+            fontSize: getFontSize(text.length),
+            color: "white",
+            fontWeight: "400",
+            lineHeight: "1.4",
+            textShadow: "0px 2px 8px rgba(0,0,0,0.6)",
+            margin: 0,
+            whiteSpace: "pre-wrap", // Support for multi-line/paragraphs
+          }}
+        >
+          {text}
+        </p>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -128,6 +156,8 @@ export const ASFAT2 = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,
+  video1Duration = 0,
+  video2Duration = 0,
   musicIndex = 1,
   r2BaseUrl = "",
 }) => {
@@ -153,6 +183,33 @@ export const ASFAT2 = ({
     ? `${r2BaseUrl}/astrologia_familiar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
+  // Simple conditional loop component
+  const SmartVideo = ({ src, videoDuration, fillDuration }) => {
+    const vDuration = Math.round(videoDuration);
+    const fDuration = Math.round(fillDuration);
+
+    // If we have duration and it's shorter than what we need, loop it
+    if (vDuration > 0 && vDuration < fDuration) {
+      return (
+        <Loop durationInFrames={vDuration}>
+          <OffthreadVideo
+            src={src}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            muted
+          />
+        </Loop>
+      );
+    }
+    // Otherwise just play it
+    return (
+      <OffthreadVideo
+        src={src}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        muted
+      />
+    );
+  };
+
   return (
     <AbsoluteFill>
       <Loop durationInFrames={durationInFrames}>
@@ -161,25 +218,21 @@ export const ASFAT2 = ({
 
       <Sequence from={0} durationInFrames={hookDuration}>
         <AbsoluteFill>
-          <Loop durationInFrames={900}>
-            <OffthreadVideo
-              src={bg1}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              muted
-            />
-          </Loop>
+          <SmartVideo
+            src={bg1}
+            videoDuration={video1Duration}
+            fillDuration={hookDuration}
+          />
         </AbsoluteFill>
       </Sequence>
 
       <Sequence from={hookDuration} durationInFrames={messageDuration}>
         <AbsoluteFill>
-          <Loop durationInFrames={900}>
-            <OffthreadVideo
-              src={bg2}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              muted
-            />
-          </Loop>
+          <SmartVideo
+            src={bg2}
+            videoDuration={video2Duration}
+            fillDuration={messageDuration}
+          />
         </AbsoluteFill>
       </Sequence>
 
@@ -204,7 +257,7 @@ export const ASFAT2 = ({
           fontWeight="700"
           letterSpacing="0.03em"
         >
-          <div style={{ fontSize: "140px", marginTop: "40px" }}>✉️</div>
+          <div style={{ fontSize: "140px" }}>✉️</div>
         </SimpleText>
       </Sequence>
 
