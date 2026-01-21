@@ -34,15 +34,15 @@ export async function fetchApprovedRecord(templateId, tableId) {
     const sequences =
       templateId === "asfa-t1"
         ? {
-          hook: record.fields.text_1_hook,
-          problem: record.fields.text_2_problem,
-          solution: record.fields.text_3_solution,
-          cta: record.fields.text_4_action,
-        }
+            hook: record.fields.text_1_hook,
+            problem: record.fields.text_2_problem,
+            solution: record.fields.text_3_solution,
+            cta: record.fields.text_4_action,
+          }
         : {
-          hook: record.fields.text_1_hook,
-          message: record.fields.text_2_message,
-        };
+            hook: record.fields.text_1_hook,
+            message: record.fields.text_2_message,
+          };
 
     return {
       id: record.id,

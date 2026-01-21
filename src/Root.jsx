@@ -23,7 +23,7 @@ export const RemotionRoot = () => {
             cta: "Duis aute irure dolor in reprehenderit.",
           },
         }}
-      // The render process will override durationInFrames based on calculateTotalFrames
+        // The render process will override durationInFrames based on calculateTotalFrames
       />
     </>
   );

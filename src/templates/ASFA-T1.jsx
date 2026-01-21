@@ -39,10 +39,10 @@ const SimpleText = ({
   const typingDuration = Math.min(30, duration - 20);
   const charsToShow = typewriter
     ? Math.floor(
-      interpolate(frame, [0, typingDuration], [0, text.length], {
-        extrapolateRight: "clamp",
-      }),
-    )
+        interpolate(frame, [0, typingDuration], [0, text.length], {
+          extrapolateRight: "clamp",
+        }),
+      )
     : text.length;
 
   // Opacity timing logic
@@ -143,7 +143,7 @@ export const ASFAT1 = ({
       {/* Background Layer 1: Start to T2 (Solution Start) */}
       <Sequence from={0} durationInFrames={t2}>
         <AbsoluteFill>
-          <Loop durationInFrames={120}>
+          <Loop durationInFrames={900}>
             <OffthreadVideo
               src={bg1}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -156,7 +156,7 @@ export const ASFAT1 = ({
       {/* Background Layer 2: T2 to End */}
       <Sequence from={t2} durationInFrames={durationInFrames - t2}>
         <AbsoluteFill>
-          <Loop durationInFrames={120}>
+          <Loop durationInFrames={900}>
             <OffthreadVideo
               src={bg2}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
