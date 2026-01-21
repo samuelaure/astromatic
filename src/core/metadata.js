@@ -14,7 +14,7 @@ export async function getVideoDuration(source) {
   try {
     // ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 [source]
     const { stdout } = await execAsync(
-      `npx remotion ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${source}"`,
+      `cmd /c npx remotion ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${source}"`,
     );
 
     const durationInSeconds = parseFloat(stdout.trim());
@@ -26,8 +26,9 @@ export async function getVideoDuration(source) {
   } catch (error) {
     logger.warn(
       { source, err: error.message },
-      "Failed to fetch duration via ffprobe",
+      "Failed to fetch duration via ffprobe. Using 15s fallback.",
     );
-    return 0; // Fallback
+    // Return 15s (450 frames) as a safe fallback to ensure looping works
+    return 450;
   }
 }
