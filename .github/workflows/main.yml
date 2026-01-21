@@ -57,7 +57,7 @@ jobs:
           
           # Environment
           NODE_ENV: production
-        run: npm start -- asfa-t1
+        run: node src/main.js asfa-t1
 
   evening_t2_cycle:
     runs-on: ubuntu-latest
@@ -109,4 +109,4 @@ jobs:
           
           # Environment
           NODE_ENV: production
-        run: npm start -- asfa-t2
+        run: node src/main.js asfa-t2
