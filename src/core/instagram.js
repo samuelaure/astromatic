@@ -71,10 +71,21 @@ export async function publishToInstagram(videoUrl, caption) {
       },
     );
 
-    logger.info(
-      { publishId: publishResponse.data.id },
-      "Media published successfully.",
+    const publishId = publishResponse.data.id;
+    logger.info({ publishId }, "Media published successfully.");
+
+    // 4. Get Permalink
+    const mediaResponse = await axios.get(
+      `https://graph.facebook.com/v24.0/${publishId}`,
+      {
+        params: {
+          fields: "permalink",
+          access_token: IG_TOKEN,
+        },
+      },
     );
+
+    return mediaResponse.data.permalink;
   } catch (error) {
     const errorData = error.response?.data || error.message;
     logger.error({ err: errorData }, "Instagram publication failed");

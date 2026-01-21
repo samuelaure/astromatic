@@ -25,12 +25,11 @@ const run = async () => {
 
     if (!payload) {
       logger.info("Nothing to process. Exiting.");
+      await notifyTelegram(
+        "⚠️ <b>Astromatic:</b> No approved records found in Airtable today.",
+      );
       return;
     }
-
-    await notifyTelegram(
-      `🚀 <b>Astromatic:</b> Starting cycle for record ${payload.id}...`,
-    );
 
     // Ensure output directory exists and old file is removed
     if (fs.existsSync(outputLocation)) {
@@ -113,14 +112,14 @@ const run = async () => {
     logger.info({ publicUrl }, "File uploaded to R2");
 
     logger.info("Publishing to Instagram...");
-    await publishToInstagram(publicUrl, payload.caption);
-    logger.info("Published to Instagram successfully.");
+    const postLink = await publishToInstagram(publicUrl, payload.caption);
+    logger.info({ postLink }, "Published to Instagram successfully.");
 
     // 6. Update Status in Airtable
     await updateRecordToProcessed(payload.id);
 
     await notifyTelegram(
-      "✅ <b>Astromatic:</b> Cycle completed and record updated!",
+      `✅ <b>Astromatic:</b> Cycle completed!\n\n🔗 <a href="${postLink}">View on Instagram</a>`,
     );
     logger.info("✅ Automation cycle finished.");
   } catch (error) {

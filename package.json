@@ -1,6 +1,7 @@
 {
   "name": "astromatic",
-  "version": "2.1.3",
+  "version": "2.1.4",
+  "author": "Samuel Aure",
   "description": "Data-driven video automation engine",
   "main": "src/main.js",
   "type": "module",
