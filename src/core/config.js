@@ -23,9 +23,12 @@ const envSchema = z.object({
   AIRTABLE_BASE_ID: z
     .preprocess((val) => (val === "" ? undefined : val), z.string())
     .default("appEVPrTtF1XyAQ4h"),
-  AIRTABLE_TABLE_ID: z
+  AIRTABLE_ASFA_T1_TABLE_ID: z
     .preprocess((val) => (val === "" ? undefined : val), z.string())
     .default("tblC7lVTkY0ftzNoS"),
+  AIRTABLE_ASFA_T2_TABLE_ID: z
+    .preprocess((val) => (val === "" ? undefined : val), z.string())
+    .default("tblkTYpwfm3aLzKER"),
 
   // Instagram
   IG_TOKEN: z.string(),

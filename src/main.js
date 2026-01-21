@@ -14,19 +14,48 @@ import { env } from "./core/config.js";
 import logger from "./core/logger.js";
 
 const run = async () => {
+  // 0. Configuration Mapping
+  const templateArg = process.argv[2] || "asfa-t1";
+  const configs = {
+    "asfa-t1": {
+      id: "asfa-t1",
+      tableId: env.AIRTABLE_ASFA_T1_TABLE_ID,
+    },
+    "asfa-t2": {
+      id: "asfa-t2",
+      tableId: env.AIRTABLE_ASFA_T2_TABLE_ID,
+    },
+  };
+
+  const activeConfig = configs[templateArg];
+
+  if (!activeConfig) {
+    logger.error({ templateArg }, "Invalid template ID provided.");
+    process.exit(1);
+  }
+
   const entry = path.resolve("src/index.js");
   const outputLocation = path.resolve("out/video.mp4");
 
-  logger.info("🚀 Astromatic: Starting Airtable-driven automation cycle...");
+  logger.info(
+    { templateId: activeConfig.id },
+    "🚀 Astromatic: Starting automation cycle...",
+  );
 
   try {
     // 1. Fetch Approved Content from Airtable
-    const payload = await fetchApprovedRecord();
+    const payload = await fetchApprovedRecord(
+      activeConfig.id,
+      activeConfig.tableId,
+    );
 
     if (!payload) {
-      logger.info("Nothing to process. Exiting.");
+      logger.info(
+        { templateId: activeConfig.id },
+        "Nothing to process. Exiting.",
+      );
       await notifyTelegram(
-        "⚠️ <b>Astromatic:</b> No approved records found in Airtable today.",
+        `⚠️ <b>Astromatic:</b> No approved records found in Airtable for <b>${activeConfig.id}</b> today.`,
       );
       return;
     }
@@ -44,11 +73,9 @@ const run = async () => {
 
     // 2. Random Background & Music Selection
     const selectRandom = (max) => Math.floor(Math.random() * max) + 1;
-
     const videoIndex1 = selectRandom(28);
     let videoIndex2 = selectRandom(28);
-    while (videoIndex2 === videoIndex1) videoIndex2 = selectRandom(28); // Ensure they are different
-
+    while (videoIndex2 === videoIndex1) videoIndex2 = selectRandom(28);
     const musicIndex = selectRandom(10);
 
     logger.info(
@@ -67,12 +94,12 @@ const run = async () => {
     // Construct common input props
     const inputProps = {
       ...payload,
-      templateId: "asfa-t1",
+      templateId: activeConfig.id,
       videoIndex1,
       videoIndex2,
       musicIndex,
       durationInFrames,
-      r2BaseUrl: env.R2_PUBLIC_URL.replace(/\/$/, ""), // Ensure no trailing slash
+      r2BaseUrl: env.R2_PUBLIC_URL.replace(/\/$/, ""),
     };
 
     const composition = await selectComposition({
@@ -98,8 +125,6 @@ const run = async () => {
 
     // 5. Distribution (Cloudflare R2)
     logger.info("Uploading to Cloudflare R2...");
-
-    // Generate formatted timestamp: YYYYMMDD_HHMMSS
     const now = new Date();
     const timestamp = now
       .toISOString()
@@ -116,10 +141,10 @@ const run = async () => {
     logger.info({ postLink }, "Published to Instagram successfully.");
 
     // 6. Update Status in Airtable
-    await updateRecordToProcessed(payload.id);
+    await updateRecordToProcessed(payload.id, activeConfig.tableId);
 
     await notifyTelegram(
-      `✅ <b>Astromatic:</b> Cycle completed!\n\n🔗 <a href="${postLink}">View on Instagram</a>`,
+      `✅ <b>Astromatic:</b> Cycle completed for <b>${activeConfig.id}</b>!\n\n🔗 <a href="${postLink}">View on Instagram</a>`,
     );
     logger.info("✅ Automation cycle finished.");
   } catch (error) {

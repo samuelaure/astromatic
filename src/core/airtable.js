@@ -5,13 +5,13 @@ import logger from "./logger.js";
 const AIRTABLE_API_URL = "https://api.airtable.com/v0";
 
 /**
- * Fetches the first record with status 'Approved' from Airtable
+ * Fetches the first record with status 'Approved' from Airtable for a specific template
  */
-export async function fetchApprovedRecord() {
-  const url = `${AIRTABLE_API_URL}/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_TABLE_ID}`;
+export async function fetchApprovedRecord(templateId, tableId) {
+  const url = `${AIRTABLE_API_URL}/${env.AIRTABLE_BASE_ID}/${tableId}`;
 
   try {
-    logger.info("Fetching approved records from Airtable...");
+    logger.info({ templateId }, "Fetching approved records from Airtable...");
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${env.AIRTABLE_TOKEN}`,
@@ -24,24 +24,34 @@ export async function fetchApprovedRecord() {
 
     const records = response.data.records;
     if (!records || records.length === 0) {
-      logger.info("No approved records found in Airtable.");
+      logger.info({ templateId }, "No approved records found in Airtable.");
       return null;
     }
 
     const record = records[0];
+
+    // Field mapping based on template
+    const sequences =
+      templateId === "asfa-t1"
+        ? {
+          hook: record.fields.text_1_hook,
+          problem: record.fields.text_2_problem,
+          solution: record.fields.text_3_solution,
+          cta: record.fields.text_4_action,
+        }
+        : {
+          hook: record.fields.text_1_hook,
+          message: record.fields.text_2_message,
+        };
+
     return {
       id: record.id,
-      sequences: {
-        hook: record.fields.text_1_hook,
-        problem: record.fields.text_2_problem,
-        solution: record.fields.text_3_solution,
-        cta: record.fields.text_4_action,
-      },
+      sequences,
       caption: record.fields.caption,
     };
   } catch (error) {
     logger.error(
-      { err: error.response?.data || error.message },
+      { err: error.response?.data || error.message, templateId },
       "Failed to fetch from Airtable",
     );
     throw error;
@@ -51,12 +61,12 @@ export async function fetchApprovedRecord() {
 /**
  * Updates a record status to 'Processed'
  */
-export async function updateRecordToProcessed(recordId) {
-  const url = `${AIRTABLE_API_URL}/${env.AIRTABLE_BASE_ID}/${env.AIRTABLE_TABLE_ID}`;
+export async function updateRecordToProcessed(recordId, tableId) {
+  const url = `${AIRTABLE_API_URL}/${env.AIRTABLE_BASE_ID}/${tableId}`;
 
   try {
     logger.info(
-      { recordId },
+      { recordId, tableId },
       "Updating Airtable record status to Processed...",
     );
     await axios.patch(

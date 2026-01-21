@@ -1,5 +1,6 @@
 import React from "react";
 import { ASFAT1 } from "../templates/ASFA-T1.jsx";
+import { ASFAT2 } from "../templates/ASFA-T2.jsx";
 
 export const TemplateRegistry = (props) => {
   const { templateId } = props;
@@ -7,6 +8,8 @@ export const TemplateRegistry = (props) => {
   switch (templateId) {
     case "asfa-t1":
       return <ASFAT1 {...props} />;
+    case "asfa-t2":
+      return <ASFAT2 {...props} />;
     default:
       return (
         <div
