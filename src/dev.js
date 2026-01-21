@@ -8,10 +8,33 @@ import { env } from "./core/config.js";
 import logger from "./core/logger.js";
 
 const runDev = async () => {
+  // 0. Configuration Mapping
+  const templateArg = process.argv[2] || "asfa-t1";
+  const configs = {
+    "asfa-t1": {
+      id: "asfa-t1",
+      tableId: env.AIRTABLE_ASFA_T1_TABLE_ID,
+    },
+    "asfa-t2": {
+      id: "asfa-t2",
+      tableId: env.AIRTABLE_ASFA_T2_TABLE_ID,
+    },
+  };
+
+  const activeConfig = configs[templateArg];
+
+  if (!activeConfig) {
+    logger.error({ templateArg }, "Invalid template ID provided.");
+    process.exit(1);
+  }
+
   const entry = path.resolve("src/index.js");
   const outputLocation = path.resolve("out/test-video.mp4");
 
-  logger.info("🧪 [DEV MODE] Starting pipeline test (Render only)...");
+  logger.info(
+    { templateId: activeConfig.id },
+    "🧪 [DEV MODE] Starting pipeline test (Render only)...",
+  );
 
   try {
     // 0. Ensure old file is removed
@@ -26,10 +49,16 @@ const runDev = async () => {
     }
 
     // 1. Fetch Approved Content from Airtable
-    const payload = await fetchApprovedRecord();
+    const payload = await fetchApprovedRecord(
+      activeConfig.id,
+      activeConfig.tableId,
+    );
 
     if (!payload) {
-      logger.info("No 'Approved' record found in Airtable to test with.");
+      logger.info(
+        { templateId: activeConfig.id },
+        "No 'Approved' record found in Airtable to test with.",
+      );
       return;
     }
 
@@ -57,7 +86,7 @@ const runDev = async () => {
 
     const inputProps = {
       ...payload,
-      templateId: "asfa-t1",
+      templateId: activeConfig.id,
       videoIndex1,
       videoIndex2,
       musicIndex,
