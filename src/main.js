@@ -78,6 +78,11 @@ const run = async () => {
     while (videoIndex2 === videoIndex1) videoIndex2 = selectRandom(28);
     const musicIndex = selectRandom(10);
 
+    const pad = (n) => String(n).padStart(4, "0");
+    const vid1Name = `ASFA_VID_${pad(videoIndex1)}`;
+    const vid2Name = `ASFA_VID_${pad(videoIndex2)}`;
+    const audName = `ASFA_AUD_${pad(musicIndex)}`;
+
     logger.info(
       { videoIndex1, videoIndex2, musicIndex },
       "Selected random assets indices",
@@ -144,7 +149,7 @@ const run = async () => {
     await updateRecordToProcessed(payload.id, activeConfig.tableId);
 
     await notifyTelegram(
-      `✅ <b>Astromatic:</b> Cycle completed for <b>${activeConfig.id}</b>!\n\n🔗 <a href="${postLink}">View on Instagram</a>`,
+      `✅ <b>Astromatic:</b> Cycle completed for <b>${activeConfig.id}</b>!\n\n🎬 <b>Assets:</b>\n- Video 1: <code>${vid1Name}</code>\n- Video 2: <code>${vid2Name}</code>\n- Music: <code>${audName}</code>\n\n🔗 <a href="${postLink}">View on Instagram</a>`,
     );
     logger.info("✅ Automation cycle finished.");
   } catch (error) {
