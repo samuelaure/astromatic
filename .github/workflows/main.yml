@@ -1,7 +1,17 @@
 name: Astromatic Automation Cycle
 
 on:
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
+    inputs:
+      template:
+        description: 'Template to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - asfa-t1
+          - asfa-t2
   schedule:
     - cron: '0 10 * * *' # Runs at 11:00 AM CET (10:00 UTC)
     - cron: '0 17 * * *' # Runs at 18:00 PM CET (17:00 UTC)
@@ -9,7 +19,9 @@ on:
 jobs:
   morning_t1_cycle:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 10 * * *'
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'asfa-t1' || github.event.inputs.template == 'all'))
 
     steps:
       - name: Checkout Repository
@@ -61,7 +73,9 @@ jobs:
 
   evening_t2_cycle:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 17 * * *'
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 17 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'asfa-t2' || github.event.inputs.template == 'all'))
 
     steps:
       - name: Checkout Repository

@@ -14,7 +14,7 @@ export async function getVideoDuration(source) {
   try {
     // ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 [source]
     const { stdout } = await execAsync(
-      `cmd /c npx remotion ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${source}"`,
+      `npx remotion ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${source}"`,
     );
 
     const durationInSeconds = parseFloat(stdout.trim());
