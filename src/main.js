@@ -15,7 +15,7 @@ import logger from "./core/logger.js";
 
 const run = async () => {
   // 0. Configuration Mapping
-  const templateArg = process.argv[2] || "asfa-t1";
+  const templateArg = (process.argv[2] || "asfa-t1").replace(/^--/, "");
   const configs = {
     "asfa-t1": {
       id: "asfa-t1",
