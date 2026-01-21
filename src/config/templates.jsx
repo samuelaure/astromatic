@@ -1,12 +1,12 @@
 import React from "react";
-import { ReelV1 } from "../templates/ReelV1.jsx";
+import { ASFAT1 } from "../templates/ASFA-T1.jsx";
 
 export const TemplateRegistry = (props) => {
   const { templateId } = props;
 
   switch (templateId) {
-    case "reel-v1":
-      return <ReelV1 {...props} />;
+    case "asfa-t1":
+      return <ASFAT1 {...props} />;
     default:
       return (
         <div

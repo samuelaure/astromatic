@@ -12,8 +12,8 @@ export const RemotionRoot = () => {
         width={1080}
         height={1920}
         defaultProps={{
-          templateId: "reel-v1",
-          backgroundUrl: "", // Will fallback to the local video in ReelV1
+          templateId: "asfa-t1",
+          backgroundUrl: "", // Will fallback to the local video in ASFA-T1
           sequences: {
             hook: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             problem:
@@ -23,7 +23,7 @@ export const RemotionRoot = () => {
             cta: "Duis aute irure dolor in reprehenderit.",
           },
         }}
-        // The render process will override durationInFrames based on calculateTotalFrames
+      // The render process will override durationInFrames based on calculateTotalFrames
       />
     </>
   );

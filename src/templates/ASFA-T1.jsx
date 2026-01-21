@@ -39,10 +39,10 @@ const SimpleText = ({
   const typingDuration = Math.min(30, duration - 20);
   const charsToShow = typewriter
     ? Math.floor(
-        interpolate(frame, [0, typingDuration], [0, text.length], {
-          extrapolateRight: "clamp",
-        }),
-      )
+      interpolate(frame, [0, typingDuration], [0, text.length], {
+        extrapolateRight: "clamp",
+      }),
+    )
     : text.length;
 
   // Opacity timing logic
@@ -97,7 +97,7 @@ const SimpleText = ({
   );
 };
 
-export const ReelV1 = ({
+export const ASFAT1 = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,

@@ -57,7 +57,7 @@ const runDev = async () => {
 
     const inputProps = {
       ...payload,
-      templateId: "reel-v1",
+      templateId: "asfa-t1",
       videoIndex1,
       videoIndex2,
       musicIndex,
