@@ -15,7 +15,7 @@ const envSchema = z.object({
   FTP_HOST: z.string().optional(),
   FTP_USER: z.string().optional(),
   FTP_PASSWORD: z.string().optional(),
-  FTP_REMOTE_PATH: z.string().default("public_html/ig/astrologia_familiar"),
+  FTP_REMOTE_PATH: z.string().default("public_html/ig/AstrologiaFamiliar"),
   PUBLIC_VIDEO_BASE_URL: z.string().url().optional(),
 
   // Airtable

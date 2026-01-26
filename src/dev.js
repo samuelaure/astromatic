@@ -77,7 +77,7 @@ const runDev = async () => {
 
     const getAssetSource = (index) => {
       if (r2BaseUrl) {
-        return `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(index)}.mp4`;
+        return `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(index)}.mp4`;
       }
       return path.resolve(
         `public/background_videos/astro-background-video-${index}.mp4`,

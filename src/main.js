@@ -85,8 +85,8 @@ const run = async () => {
     const audName = `ASFA_AUD_${pad(musicIndex)}`;
 
     const r2BaseUrl = env.R2_PUBLIC_URL.replace(/\/$/, "");
-    const bg1Url = `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`;
-    const bg2Url = `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`;
+    const bg1Url = `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`;
+    const bg2Url = `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`;
 
     logger.info("Fetching video metadata for smart looping...");
     const [video1Duration, video2Duration] = await Promise.all([
@@ -149,7 +149,7 @@ const run = async () => {
       .replace(/[-T:]/g, "")
       .split(".")[0]
       .replace(/(\d{8})(\d{6})/, "$1_$2");
-    const remoteKey = `astrologia_familiar/outputs/ASFA_OUTPUT_${timestamp}.mp4`;
+    const remoteKey = `AstrologiaFamiliar/outputs/ASFA_OUTPUT_${timestamp}.mp4`;
 
     const publicUrl = await uploadToR2(outputLocation, remoteKey);
     logger.info({ publicUrl }, "File uploaded to R2");

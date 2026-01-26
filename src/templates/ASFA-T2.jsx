@@ -172,15 +172,15 @@ export const ASFAT2 = ({
   const pad = (n) => String(n).padStart(4, "0");
 
   const bg1 = r2BaseUrl
-    ? `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
+    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
 
   const bg2 = r2BaseUrl
-    ? `${r2BaseUrl}/astrologia_familiar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
+    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
 
   const music = r2BaseUrl
-    ? `${r2BaseUrl}/astrologia_familiar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
+    ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
   // Simple conditional loop component
