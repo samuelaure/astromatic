@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  astromatic:
+    build: .
+    env_file: .env
+    volumes:
+      - ./out:/app/out
+    restart: unless-stopped
