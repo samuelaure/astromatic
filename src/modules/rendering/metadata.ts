@@ -20,9 +20,10 @@ export async function getVideoDuration(source: string): Promise<number> {
         }
 
         return Math.floor(durationInSeconds * FPS);
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         logger.warn(
-            { source, err: error.message },
+            { source, err: errorMessage },
             "Failed to fetch duration via ffprobe. Using 15s fallback."
         );
         // Return 15s (450 frames) as a safe fallback

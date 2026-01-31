@@ -21,7 +21,8 @@ export async function notifyTelegram(message: string): Promise<void> {
             }
         );
         logger.debug("Telegram notification sent.");
-    } catch (err: any) {
-        logger.error({ err: err.message }, "Telegram notification failed");
+    } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        logger.error({ err: error.message }, "Telegram notification failed");
     }
 }

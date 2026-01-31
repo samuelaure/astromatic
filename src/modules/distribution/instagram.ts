@@ -105,11 +105,12 @@ export async function publishToInstagram(
             );
 
             return mediaResponse.data.permalink;
-        } catch (error: any) {
+        } catch (error: unknown) {
             if (error instanceof DistributionError) throw error;
 
-            const errorData = error.response?.data || error.message;
-            const subcode = error.response?.data?.error?.error_subcode;
+            const err = error as { response?: { data?: { error?: { error_subcode?: number }; status?: string } }; message?: string };
+            const errorData = err.response?.data || err.message || "Unknown error";
+            const subcode = err.response?.data?.error?.error_subcode;
 
             let errorMessage = "Instagram publication session failed";
             if (subcode === 467) {

@@ -17,7 +17,7 @@ export function calculateSequenceDuration(text: string): number {
 /**
  * Calculates total frames for the composition
  */
-export function calculateTotalFrames(sequences: Record<string, any>): number {
+export function calculateTotalFrames(sequences: Record<string, string>): number {
     const contentDuration = Object.values(sequences).reduce((acc, text) => {
         return acc + calculateSequenceDuration(text);
     }, 0);

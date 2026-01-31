@@ -39,9 +39,10 @@ async function exchangeToken() {
         console.log(`Expires in: ${Math.round(expires_in / 86400)} days`);
         console.log("\n👉 ACTION: Copy this token into your .env as IG_TOKEN");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("❌ Exchange Failed!");
-        console.error(error.response?.data || error.message);
+        const err = error as { response?: { data?: unknown }; message?: string };
+        console.error(err.response?.data || err.message || "Unknown error");
     }
 }
 

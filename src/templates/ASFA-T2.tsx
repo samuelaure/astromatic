@@ -30,7 +30,7 @@ interface SimpleTextProps {
   duration: number;
   noFadeIn?: boolean;
   fontFamily: string;
-  fontWeight?: string;
+  fontWeight?: React.CSSProperties["fontWeight"];
   letterSpacing?: string;
   children?: React.ReactNode;
 }
@@ -86,7 +86,7 @@ const SimpleText: React.FC<SimpleTextProps> = ({
             fontFamily,
             fontSize: "70px",
             color: "white",
-            fontWeight: fontWeight as any,
+            fontWeight,
             lineHeight: "1.2",
             textShadow: "0px 4px 10px rgba(0,0,0,0.5)",
             margin: 0,
@@ -161,7 +161,7 @@ const DynamicMessage: React.FC<{ text: string; duration: number }> = ({ text, du
   );
 };
 
-interface ASFAT2Props {
+export interface ASFAT2Props {
   sequences: {
     hook: string;
     message: string;
@@ -173,6 +173,30 @@ interface ASFAT2Props {
   musicIndex?: number;
   r2BaseUrl?: string;
 }
+
+const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
+  const vDuration = Math.round(videoDuration);
+  const fDuration = Math.round(fillDuration);
+
+  if (vDuration > 0 && vDuration < fDuration) {
+    return (
+      <Loop durationInFrames={vDuration}>
+        <OffthreadVideo
+          src={src}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          muted
+        />
+      </Loop>
+    );
+  }
+  return (
+    <OffthreadVideo
+      src={src}
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      muted
+    />
+  );
+};
 
 export const ASFAT2: React.FC<ASFAT2Props> = ({
   sequences,
@@ -202,30 +226,6 @@ export const ASFAT2: React.FC<ASFAT2Props> = ({
   const music = r2BaseUrl
     ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
-
-  const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
-    const vDuration = Math.round(videoDuration);
-    const fDuration = Math.round(fillDuration);
-
-    if (vDuration > 0 && vDuration < fDuration) {
-      return (
-        <Loop durationInFrames={vDuration}>
-          <OffthreadVideo
-            src={src}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            muted
-          />
-        </Loop>
-      );
-    }
-    return (
-      <OffthreadVideo
-        src={src}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        muted
-      />
-    );
-  };
 
   return (
     <AbsoluteFill>

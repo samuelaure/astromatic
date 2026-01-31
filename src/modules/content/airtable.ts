@@ -8,7 +8,7 @@ const AIRTABLE_API_URL = "https://api.airtable.com/v0";
 
 export interface AirtablePayload {
     id: string;
-    sequences: Record<string, any>;
+    sequences: Record<string, string>;
     caption: string;
 }
 
@@ -43,28 +43,40 @@ export async function fetchApprovedRecord(
 
             const record = records[0];
 
-            const sequences =
+            // Define specific types for fields
+            interface Fields {
+                text_1_hook?: string;
+                text_2_problem?: string;
+                text_3_solution?: string;
+                text_4_action?: string;
+                text_2_message?: string;
+                caption?: string;
+            }
+            const fields = record.fields as Fields;
+
+            const sequences: Record<string, string> =
                 templateId === "asfa-t1"
                     ? {
-                        hook: record.fields.text_1_hook,
-                        problem: record.fields.text_2_problem,
-                        solution: record.fields.text_3_solution,
-                        cta: record.fields.text_4_action,
+                        hook: fields.text_1_hook || "",
+                        problem: fields.text_2_problem || "",
+                        solution: fields.text_3_solution || "",
+                        cta: fields.text_4_action || "",
                     }
                     : {
-                        hook: record.fields.text_1_hook,
-                        message: record.fields.text_2_message,
+                        hook: fields.text_1_hook || "",
+                        message: fields.text_2_message || "",
                     };
 
             return {
                 id: record.id,
                 sequences,
-                caption: record.fields.caption,
+                caption: fields.caption || "",
             };
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: unknown }, message?: string };
             throw new ContentFetchError("Failed to fetch from Airtable", {
                 templateId,
-                err: error.response?.data || error.message
+                err: err.response?.data || err.message || "Unknown error"
             });
         }
     }, "fetchApprovedRecord");
@@ -106,10 +118,11 @@ export async function updateRecordToProcessed(
                 }
             );
             logger.info({ recordId }, "Airtable record updated successfully.");
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: unknown }, message?: string };
             throw new ContentFetchError("Failed to update Airtable record", {
                 recordId,
-                err: error.response?.data || error.message
+                err: err.response?.data || err.message || "Unknown error"
             });
         }
     }, "updateRecordToProcessed");

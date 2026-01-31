@@ -21,11 +21,25 @@ export interface PipelineConfig {
     tableId: string;
 }
 
-export class PipelineService {
-    private readonly entryPath = path.resolve("src/index.ts");
-    private readonly outputPath = path.resolve("out/video.mp4");
+export interface PipelineAssets {
+    videoIndex1: number;
+    videoIndex2: number;
+    video1Duration: number;
+    video2Duration: number;
+    musicIndex: number;
+    r2BaseUrl: string;
+    names: {
+        vid1: string;
+        vid2: string;
+        aud: string;
+    };
+}
 
-    constructor(private readonly config: PipelineConfig) { }
+export class PipelineService {
+    protected readonly entryPath = path.resolve("src/index.ts");
+    protected readonly outputPath = path.resolve("out/video.mp4");
+
+    constructor(protected readonly config: PipelineConfig) { }
 
     public async execute(): Promise<void> {
         logger.info(
@@ -56,12 +70,12 @@ export class PipelineService {
             await this.sendSuccessNotification(payload, assets, postLink);
 
             logger.info("✅ Automation cycle finished successfully.");
-        } catch (error: any) {
+        } catch (error: unknown) {
             this.handleError(error);
         }
     }
 
-    private async fetchContent(): Promise<AirtablePayload | null> {
+    protected async fetchContent(): Promise<AirtablePayload | null> {
         const payload = await fetchApprovedRecord(
             this.config.templateId,
             this.config.tableId
@@ -81,7 +95,7 @@ export class PipelineService {
         return payload;
     }
 
-    private prepareOutputDirectory(): void {
+    protected prepareOutputDirectory(): void {
         const outDir = path.dirname(this.outputPath);
         if (!fs.existsSync(outDir)) {
             fs.mkdirSync(outDir, { recursive: true });
@@ -90,15 +104,16 @@ export class PipelineService {
         if (fs.existsSync(this.outputPath)) {
             try {
                 fs.unlinkSync(this.outputPath);
-            } catch (e) {
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : "Unknown error";
                 throw new RenderingError(
-                    `Could not delete ${this.outputPath}. Ensure it is not open in another program.`
+                    `Could not delete ${this.outputPath}. Ensure it is not open in another program. Error: ${errorMessage}`
                 );
             }
         }
     }
 
-    private async selectAssets() {
+    protected async selectAssets(): Promise<PipelineAssets> {
         const selectRandom = (max: number) => Math.floor(Math.random() * max) + 1;
 
         const videoIndex1 = selectRandom(MAX_BACKGROUND_VIDEOS);
@@ -135,7 +150,7 @@ export class PipelineService {
         };
     }
 
-    private async renderAndUpload(payload: AirtablePayload, assets: any): Promise<string> {
+    protected async renderAndUpload(payload: AirtablePayload, assets: PipelineAssets): Promise<string> {
         logger.info("Bundling and selecting composition...");
         const bundled = await bundle(this.entryPath);
         const durationInFrames = calculateTotalFrames(payload.sequences);
@@ -176,16 +191,27 @@ export class PipelineService {
         return uploadToR2(this.outputPath, remoteKey);
     }
 
-    private async sendSuccessNotification(_payload: AirtablePayload, assets: any, postLink: string): Promise<void> {
+    protected async sendSuccessNotification(_payload: AirtablePayload, assets: PipelineAssets, postLink: string): Promise<void> {
         await notifyTelegram(
             `✅ <b>Astromatic:</b> Cycle completed for <b>${this.config.templateId}</b>!\n\n🎬 <b>Assets:</b>\n- Video 1: <code>${assets.names.vid1}</code>\n- Video 2: <code>${assets.names.vid2}</code>\n- Music: <code>${assets.names.aud}</code>\n\n🔗 <a href="${postLink}">View on Instagram</a>`
         );
     }
 
-    private handleError(error: any): never {
-        const message = error instanceof PipelineError ? error.message : "Critical failure in automation pipeline";
-        logger.error({ err: error, context: error.context }, message);
-        notifyTelegram(`❌ <b>Astromatic Error:</b>\n${message}\n\n<code>${error.message}</code>`);
+    protected handleError(error: unknown): never {
+        let message = "Critical failure in automation pipeline";
+        let context: Record<string, unknown> | undefined;
+        let errorMessage = "Unknown error";
+
+        if (error instanceof PipelineError) {
+            message = error.message;
+            context = error.context;
+            errorMessage = error.name;
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
+        logger.error({ err: error, context }, message);
+        notifyTelegram(`❌ <b>Astromatic Error:</b>\n${message}\n\n<code>${errorMessage}</code>`);
         process.exit(1);
     }
 }

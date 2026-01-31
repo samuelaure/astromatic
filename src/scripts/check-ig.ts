@@ -36,11 +36,13 @@ async function checkToken() {
         });
         console.log("✅ Business Account found:", bizResponse.data);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("❌ Token Validation Failed!");
-        if (error.response) {
-            console.error(JSON.stringify(error.response.data, null, 2));
-            const subcode = error.response.data.error?.error_subcode;
+        const err = error as { response?: { data?: { error?: { error_subcode?: number } } }; message?: string };
+
+        if (err.response) {
+            console.error(JSON.stringify(err.response.data, null, 2));
+            const subcode = err.response.data?.error?.error_subcode;
             if (subcode === 467) {
                 console.error("\n💡 HINT: Error subcode 467 means the user has logged out or changed their password.");
                 console.error("You need to generate a NEW Long-Lived Token from the Meta for Developers portal.");
@@ -48,7 +50,7 @@ async function checkToken() {
                 console.error("\n💡 HINT: Token has expired.");
             }
         } else {
-            console.error(error.message);
+            console.error(err.message || "Unknown error occurred");
         }
     }
 }

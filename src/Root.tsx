@@ -6,7 +6,7 @@ export const RemotionRoot = () => {
     <>
       <Composition
         id="Main"
-        component={TemplateRegistry}
+        component={TemplateRegistry as React.ComponentType<unknown>}
         durationInFrames={300} // Default value
         fps={30}
         width={1080}

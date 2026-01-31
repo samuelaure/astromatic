@@ -9,19 +9,20 @@ export async function withRetry<T>(
     context: string,
     attempts: number = MAX_RETRY_ATTEMPTS
 ): Promise<T> {
-    let lastError: any;
+    let lastError: unknown;
     let delay = INITIAL_RETRY_DELAY_MS;
 
     for (let i = 0; i < attempts; i++) {
         try {
             return await fn();
-        } catch (error: any) {
+        } catch (error: unknown) {
             lastError = error;
             const isLastAttempt = i === attempts - 1;
 
             if (!isLastAttempt) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
                 logger.warn(
-                    { context, attempt: i + 1, nextDelay: delay, err: error.message },
+                    { context, attempt: i + 1, nextDelay: delay, err: errorMessage },
                     "Operation failed, retrying..."
                 );
                 await new Promise((resolve) => setTimeout(resolve, delay));

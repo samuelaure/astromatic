@@ -49,10 +49,11 @@ export const uploadToR2 = async (
             const publicUrl = `${baseUrl}${fileName}`;
             logger.info({ publicUrl }, "File uploaded successfully to R2");
             return publicUrl;
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Unknown R2 upload error";
             throw new UploadError("Failed to upload file to R2", {
                 fileName,
-                err: error.message
+                err: errorMessage
             });
         }
     }, "uploadToR2");
