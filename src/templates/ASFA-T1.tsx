@@ -11,7 +11,8 @@ import {
 } from "remotion";
 import { loadFont as loadFraunces } from "@remotion/google-fonts/Fraunces";
 import { loadFont as loadRaleway } from "@remotion/google-fonts/Raleway";
-import { calculateSequenceDuration, TAIL_FRAMES } from "../core/timing.js";
+import { calculateSequenceDuration, TAIL_FRAMES } from "../modules/rendering/utils.ts";
+import React from "react";
 
 const { fontFamily: frauncesFamily } = loadFraunces("normal", {
   weights: ["700"],
@@ -24,7 +25,17 @@ const { fontFamily: ralewayFamily } = loadRaleway("normal", {
   ignoreTooManyRequestsWarning: true,
 });
 
-const SimpleText = ({
+interface SimpleTextProps {
+  text: string;
+  duration: number;
+  noFadeIn?: boolean;
+  fontFamily: string;
+  fontWeight?: string;
+  letterSpacing?: string;
+  typewriter?: boolean;
+}
+
+const SimpleText: React.FC<SimpleTextProps> = ({
   text,
   duration,
   noFadeIn = false,
@@ -35,19 +46,15 @@ const SimpleText = ({
 }) => {
   const frame = useCurrentFrame();
 
-  // Typewriter effect reveal logic
   const typingDuration = Math.min(30, duration - 20);
   const charsToShow = typewriter
     ? Math.floor(
-        interpolate(frame, [0, typingDuration], [0, text.length], {
-          extrapolateRight: "clamp",
-        }),
-      )
+      interpolate(frame, [0, typingDuration], [0, text.length], {
+        extrapolateRight: "clamp",
+      }),
+    )
     : text.length;
 
-  // Opacity timing logic
-  // If typewriter is on OR noFadeIn is true, we start at opacity 1 instantly.
-  // Otherwise, we fade in over 10 frames.
   const hasInstantStart = typewriter || noFadeIn;
 
   const opacity = interpolate(
@@ -75,7 +82,7 @@ const SimpleText = ({
           fontFamily,
           fontSize: "70px",
           color: "white",
-          fontWeight,
+          fontWeight: fontWeight as any,
           lineHeight: "1.2",
           textShadow: "0px 4px 10px rgba(0,0,0,0.5)",
           margin: 0,
@@ -97,14 +104,29 @@ const SimpleText = ({
   );
 };
 
-export const ASFAT1 = ({
+interface ASFAT1Props {
+  sequences: {
+    hook: string;
+    problem: string;
+    solution: string;
+    cta: string;
+  };
+  videoIndex1?: number;
+  videoIndex2?: number;
+  video1Duration?: number;
+  video2Duration?: number;
+  musicIndex?: number;
+  r2BaseUrl?: string;
+}
+
+export const ASFAT1: React.FC<ASFAT1Props> = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,
   video1Duration = 0,
   video2Duration = 0,
   musicIndex = 1,
-  r2BaseUrl = "", // Base public URL for assets on R2
+  r2BaseUrl = "",
 }) => {
   const { hook, problem, solution, cta } = sequences;
   const { durationInFrames } = useVideoConfig();
@@ -118,14 +140,11 @@ export const ASFAT1 = ({
   const t2 = t1 + problemDuration;
   const t3 = t2 + solutionDuration;
 
-  // Amount of time each background needs to fill
   const fill1 = t2;
   const fill2 = durationInFrames - t2;
 
-  // Helper to pad numbers to 4 digits
-  const pad = (n) => String(n).padStart(4, "0");
+  const pad = (n: number) => String(n).padStart(4, "0");
 
-  // Background Videos from R2 (with local fallback)
   const bg1 = r2BaseUrl
     ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
@@ -134,17 +153,14 @@ export const ASFAT1 = ({
     ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
 
-  // Background Music from R2 (with local fallback)
   const music = r2BaseUrl
     ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
-  // Simple conditional loop component
-  const SmartVideo = ({ src, videoDuration, fillDuration }) => {
+  const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
     const vDuration = Math.round(videoDuration);
     const fDuration = Math.round(fillDuration);
 
-    // If we have duration and it's shorter than what we need, loop it
     if (vDuration > 0 && vDuration < fDuration) {
       return (
         <Loop durationInFrames={vDuration}>
@@ -156,7 +172,6 @@ export const ASFAT1 = ({
         </Loop>
       );
     }
-    // Otherwise just play it
     return (
       <OffthreadVideo
         src={src}
@@ -168,12 +183,10 @@ export const ASFAT1 = ({
 
   return (
     <AbsoluteFill>
-      {/* Background Audio: Looped to cover the entire duration */}
       <Loop durationInFrames={durationInFrames}>
         <Audio src={music} volume={0.5} />
       </Loop>
 
-      {/* Background Layer 1: Start to T2 (Solution Start) */}
       <Sequence from={0} durationInFrames={fill1}>
         <AbsoluteFill>
           <SmartVideo
@@ -184,7 +197,6 @@ export const ASFAT1 = ({
         </AbsoluteFill>
       </Sequence>
 
-      {/* Background Layer 2: T2 to End */}
       <Sequence from={t2} durationInFrames={fill2}>
         <AbsoluteFill>
           <SmartVideo
@@ -195,7 +207,6 @@ export const ASFAT1 = ({
         </AbsoluteFill>
       </Sequence>
 
-      {/* Dark Overlay for readability (Global) */}
       <AbsoluteFill style={{ pointerEvents: "none" }}>
         <div
           style={{
@@ -206,7 +217,6 @@ export const ASFAT1 = ({
         />
       </AbsoluteFill>
 
-      {/* Sequence 1: Hook - Fraunces Bold 700 with letter spacing. No fade/writing to ensure cover visibility. */}
       <Sequence from={0} durationInFrames={hookDuration}>
         <SimpleText
           text={hook}
@@ -219,7 +229,6 @@ export const ASFAT1 = ({
         />
       </Sequence>
 
-      {/* Sequence 2: Problem - Raleway Regular 400. Using writing effect. */}
       <Sequence from={t1} durationInFrames={problemDuration}>
         <SimpleText
           text={problem}
@@ -230,7 +239,6 @@ export const ASFAT1 = ({
         />
       </Sequence>
 
-      {/* Sequence 3: Solution - Raleway Regular 400. Standard reveal. */}
       <Sequence from={t2} durationInFrames={solutionDuration}>
         <SimpleText
           text={solution}
@@ -241,7 +249,6 @@ export const ASFAT1 = ({
         />
       </Sequence>
 
-      {/* Sequence 4: CTA - Raleway Regular 400. Using writing effect. */}
       <Sequence from={t3} durationInFrames={ctaDuration}>
         <SimpleText
           text={cta}

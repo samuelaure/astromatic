@@ -1,8 +1,8 @@
 import React from "react";
-import { ASFAT1 } from "../templates/ASFA-T1.jsx";
-import { ASFAT2 } from "../templates/ASFA-T2.jsx";
+import { ASFAT1 } from "../templates/ASFA-T1.tsx";
+import { ASFAT2 } from "../templates/ASFA-T2.tsx";
 
-export const TemplateRegistry = (props) => {
+export const TemplateRegistry: React.FC<any> = (props) => {
   const { templateId } = props;
 
   switch (templateId) {

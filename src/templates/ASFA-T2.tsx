@@ -11,7 +11,8 @@ import {
 } from "remotion";
 import { loadFont as loadFraunces } from "@remotion/google-fonts/Fraunces";
 import { loadFont as loadRaleway } from "@remotion/google-fonts/Raleway";
-import { calculateSequenceDuration, TAIL_FRAMES } from "../core/timing.js";
+import { calculateSequenceDuration } from "../modules/rendering/utils.ts";
+import React from "react";
 
 const { fontFamily: frauncesFamily } = loadFraunces("normal", {
   weights: ["700"],
@@ -24,7 +25,17 @@ const { fontFamily: ralewayFamily } = loadRaleway("normal", {
   ignoreTooManyRequestsWarning: true,
 });
 
-const SimpleText = ({
+interface SimpleTextProps {
+  text: string;
+  duration: number;
+  noFadeIn?: boolean;
+  fontFamily: string;
+  fontWeight?: string;
+  letterSpacing?: string;
+  children?: React.ReactNode;
+}
+
+const SimpleText: React.FC<SimpleTextProps> = ({
   text,
   duration,
   noFadeIn = false,
@@ -52,16 +63,15 @@ const SimpleText = ({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "0 180px", // Increased for better safe space
+        padding: "0 180px",
       }}
     >
       <div style={{ position: "relative", width: "100%" }}>
-        {/* Emoji positioned dynamically above the centered text */}
         {children && (
           <div
             style={{
               position: "absolute",
-              bottom: "105%", // Always starts above the top of the text
+              bottom: "105%",
               width: "100%",
               display: "flex",
               justifyContent: "center",
@@ -76,7 +86,7 @@ const SimpleText = ({
             fontFamily,
             fontSize: "70px",
             color: "white",
-            fontWeight,
+            fontWeight: fontWeight as any,
             lineHeight: "1.2",
             textShadow: "0px 4px 10px rgba(0,0,0,0.5)",
             margin: 0,
@@ -91,11 +101,10 @@ const SimpleText = ({
   );
 };
 
-const DynamicMessage = ({ text, duration }) => {
+const DynamicMessage: React.FC<{ text: string; duration: number }> = ({ text, duration }) => {
   const frame = useCurrentFrame();
 
-  // Granular dynamic font sizing to fit the container accurately across lengths
-  const getFontSize = (len) => {
+  const getFontSize = (len: number) => {
     if (len < 40) return "95px";
     if (len < 80) return "85px";
     if (len < 120) return "75px";
@@ -121,13 +130,13 @@ const DynamicMessage = ({ text, duration }) => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "240px 160px 340px 160px", // Reels Safe Zones + increased sides
+        padding: "240px 160px 340px 160px",
       }}
     >
       <div
         style={{
           width: "100%",
-          height: "100%", // Fixed container occupying safe vertical space
+          height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -142,7 +151,7 @@ const DynamicMessage = ({ text, duration }) => {
             lineHeight: "1.4",
             textShadow: "0px 2px 8px rgba(0,0,0,0.6)",
             margin: 0,
-            whiteSpace: "pre-wrap", // Support for multi-line/paragraphs
+            whiteSpace: "pre-wrap",
           }}
         >
           {text}
@@ -152,7 +161,20 @@ const DynamicMessage = ({ text, duration }) => {
   );
 };
 
-export const ASFAT2 = ({
+interface ASFAT2Props {
+  sequences: {
+    hook: string;
+    message: string;
+  };
+  videoIndex1?: number;
+  videoIndex2?: number;
+  video1Duration?: number;
+  video2Duration?: number;
+  musicIndex?: number;
+  r2BaseUrl?: string;
+}
+
+export const ASFAT2: React.FC<ASFAT2Props> = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,
@@ -165,11 +187,9 @@ export const ASFAT2 = ({
   const { durationInFrames } = useVideoConfig();
 
   const hookDuration = calculateSequenceDuration(hook);
-  // Give message more time if it's longer
   const messageDuration = durationInFrames - hookDuration;
 
-  // Helper to pad numbers to 4 digits
-  const pad = (n) => String(n).padStart(4, "0");
+  const pad = (n: number) => String(n).padStart(4, "0");
 
   const bg1 = r2BaseUrl
     ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
@@ -183,12 +203,10 @@ export const ASFAT2 = ({
     ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
-  // Simple conditional loop component
-  const SmartVideo = ({ src, videoDuration, fillDuration }) => {
+  const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
     const vDuration = Math.round(videoDuration);
     const fDuration = Math.round(fillDuration);
 
-    // If we have duration and it's shorter than what we need, loop it
     if (vDuration > 0 && vDuration < fDuration) {
       return (
         <Loop durationInFrames={vDuration}>
@@ -200,7 +218,6 @@ export const ASFAT2 = ({
         </Loop>
       );
     }
-    // Otherwise just play it
     return (
       <OffthreadVideo
         src={src}
@@ -236,7 +253,6 @@ export const ASFAT2 = ({
         </AbsoluteFill>
       </Sequence>
 
-      {/* Dark Overlay */}
       <AbsoluteFill style={{ pointerEvents: "none" }}>
         <div
           style={{
@@ -247,7 +263,6 @@ export const ASFAT2 = ({
         />
       </AbsoluteFill>
 
-      {/* Sequence 1: Hook + Emoji */}
       <Sequence from={0} durationInFrames={hookDuration}>
         <SimpleText
           text={hook}
@@ -261,7 +276,6 @@ export const ASFAT2 = ({
         </SimpleText>
       </Sequence>
 
-      {/* Sequence 2: Message */}
       <Sequence from={hookDuration} durationInFrames={messageDuration}>
         <DynamicMessage text={message} duration={messageDuration} />
       </Sequence>
