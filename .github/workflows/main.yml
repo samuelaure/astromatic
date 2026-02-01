@@ -67,9 +67,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
-          # Environment
           NODE_ENV: production
-        run: node src/main.js asfa-t1
+        run: npx tsx src/main.ts asfa-t1
 
   evening_t2_cycle:
     runs-on: ubuntu-latest
@@ -121,6 +120,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           
-          # Environment
           NODE_ENV: production
-        run: node src/main.js asfa-t2
+        run: npx tsx src/main.ts asfa-t2
