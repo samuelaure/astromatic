@@ -56,8 +56,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm install
-      - run: npx remotion browser ensure
+      - run: npm install --include=dev
+      - run: npx @remotion/cli browser ensure
       - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
@@ -74,8 +74,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm install
-      - run: npx remotion browser ensure
+      - run: npm install --include=dev
+      - run: npx @remotion/cli browser ensure
       - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
@@ -92,8 +92,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm install
-      - run: npx remotion browser ensure
+      - run: npm install --include=dev
+      - run: npx @remotion/cli browser ensure
       - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
@@ -110,8 +110,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm install
-      - run: npx remotion browser ensure
+      - run: npm install --include=dev
+      - run: npx @remotion/cli browser ensure
       - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
