@@ -10,10 +10,6 @@ import { getVideoDuration } from "../rendering/metadata.ts";
 import { calculateTotalFrames } from "../rendering/utils.ts";
 import { env } from "../shared/config.ts";
 import logger from "../shared/logger.ts";
-import {
-    MAX_BACKGROUND_VIDEOS,
-    MAX_BACKGROUND_AUDIOS
-} from "../shared/constants.ts";
 import { PipelineError, RenderingError } from "../shared/errors.ts";
 import { BrandConfig, getBrandFromTemplateId } from "../shared/brands.ts";
 
@@ -124,12 +120,12 @@ export class PipelineService {
     protected async selectAssets(): Promise<PipelineAssets> {
         const selectRandom = (max: number) => Math.floor(Math.random() * max) + 1;
 
-        const videoIndex1 = selectRandom(MAX_BACKGROUND_VIDEOS);
-        let videoIndex2 = selectRandom(MAX_BACKGROUND_VIDEOS);
+        const videoIndex1 = selectRandom(this.brand.maxAssets.videos);
+        let videoIndex2 = selectRandom(this.brand.maxAssets.videos);
         while (videoIndex2 === videoIndex1) {
-            videoIndex2 = selectRandom(MAX_BACKGROUND_VIDEOS);
+            videoIndex2 = selectRandom(this.brand.maxAssets.videos);
         }
-        const musicIndex = selectRandom(MAX_BACKGROUND_AUDIOS);
+        const musicIndex = selectRandom(this.brand.maxAssets.audios);
 
         const pad = (n: number) => String(n).padStart(4, "0");
         const r2BaseUrl = env.R2_PUBLIC_URL.replace(/\/$/, "");

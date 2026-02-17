@@ -9,6 +9,10 @@ export interface BrandConfig {
         video: string;
         audio: string;
     };
+    maxAssets: {
+        videos: number;
+        audios: number;
+    };
     tables: {
         t1: string | undefined;
         t2: string | undefined;
@@ -25,6 +29,10 @@ export const BRANDS: Record<string, BrandConfig> = {
             video: "ASFA_VID_",
             audio: "ASFA_AUD_",
         },
+        maxAssets: {
+            videos: 28,
+            audios: 10,
+        },
         tables: {
             t1: env.AIRTABLE_ASFA_T1_TABLE_ID,
             t2: env.AIRTABLE_ASFA_T2_TABLE_ID,
@@ -38,6 +46,10 @@ export const BRANDS: Record<string, BrandConfig> = {
         prefix: {
             video: "M_VID_",
             audio: "M_AUD_",
+        },
+        maxAssets: {
+            videos: 24,
+            audios: 4,
         },
         tables: {
             t1: env.AIRTABLE_MAFA_T1_TABLE_ID,
