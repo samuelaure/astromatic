@@ -9,21 +9,11 @@ import {
   Loop,
   Audio,
 } from "remotion";
-import { loadFont as loadFraunces } from "@remotion/google-fonts/Fraunces";
-import { loadFont as loadRaleway } from "@remotion/google-fonts/Raleway";
 import { calculateSequenceDuration } from "../modules/rendering/utils.ts";
+import { getThemeByBrand } from "../modules/shared/themes.ts";
 import React from "react";
 
-const { fontFamily: frauncesFamily } = loadFraunces("normal", {
-  weights: ["700"],
-  subsets: ["latin"],
-  ignoreTooManyRequestsWarning: true,
-});
-const { fontFamily: ralewayFamily } = loadRaleway("normal", {
-  weights: ["400"],
-  subsets: ["latin"],
-  ignoreTooManyRequestsWarning: true,
-});
+const theme = getThemeByBrand("asfa");
 
 interface SimpleTextProps {
   text: string;
@@ -144,10 +134,10 @@ const DynamicMessage: React.FC<{ text: string; duration: number }> = ({ text, du
       >
         <p
           style={{
-            fontFamily: ralewayFamily,
+            fontFamily: theme.body.fontFamily,
             fontSize: getFontSize(text.length),
             color: "white",
-            fontWeight: "400",
+            fontWeight: theme.body.fontWeight as any,
             lineHeight: "1.4",
             textShadow: "0px 2px 8px rgba(0,0,0,0.6)",
             margin: 0,
@@ -258,7 +248,7 @@ export const ASFAT2: React.FC<ASFAT2Props> = ({
           style={{
             position: "absolute",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.55)",
+            backgroundColor: theme.overlay.backgroundColor,
           }}
         />
       </AbsoluteFill>
@@ -268,9 +258,9 @@ export const ASFAT2: React.FC<ASFAT2Props> = ({
           text={hook}
           duration={hookDuration}
           noFadeIn={true}
-          fontFamily={frauncesFamily}
-          fontWeight="700"
-          letterSpacing="0.03em"
+          fontFamily={theme.hook.fontFamily}
+          fontWeight={theme.hook.fontWeight as any}
+          letterSpacing={theme.hook.letterSpacing}
         >
           <div style={{ fontSize: "140px" }}>✉️</div>
         </SimpleText>

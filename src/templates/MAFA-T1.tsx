@@ -13,7 +13,7 @@ import { calculateSequenceDuration, TAIL_FRAMES } from "../modules/rendering/uti
 import { getThemeByBrand } from "../modules/shared/themes.ts";
 import React from "react";
 
-const theme = getThemeByBrand("asfa");
+const theme = getThemeByBrand("mafa");
 
 interface SimpleTextProps {
   text: string;
@@ -94,7 +94,7 @@ const SimpleText: React.FC<SimpleTextProps> = ({
   );
 };
 
-export interface ASFAT1Props {
+export interface MAFAT1Props {
   sequences: {
     hook: string;
     problem: string;
@@ -133,7 +133,7 @@ const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: n
   );
 };
 
-export const ASFAT1: React.FC<ASFAT1Props> = ({
+export const MAFAT1: React.FC<MAFAT1Props> = ({
   sequences,
   videoIndex1 = 1,
   videoIndex2 = 2,
@@ -160,15 +160,15 @@ export const ASFAT1: React.FC<ASFAT1Props> = ({
   const pad = (n: number) => String(n).padStart(4, "0");
 
   const bg1 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
+    ? `${r2BaseUrl}/ManualFamiliar/videos/M_VID_${pad(videoIndex1)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
 
   const bg2 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
+    ? `${r2BaseUrl}/ManualFamiliar/videos/M_VID_${pad(videoIndex2)}.mp4`
     : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
 
   const music = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
+    ? `${r2BaseUrl}/ManualFamiliar/audios/M_AUD_${pad(musicIndex)}.m4a`
     : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
 
   return (
