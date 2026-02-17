@@ -213,7 +213,7 @@ export const MAFAT1: React.FC<MAFAT1Props> = ({
           duration={hookDuration}
           noFadeIn={true}
           fontFamily={theme.hook.fontFamily}
-          fontWeight={theme.hook.fontWeight as any}
+          fontWeight={theme.hook.fontWeight}
           letterSpacing={theme.hook.letterSpacing}
           typewriter={false}
         />
@@ -224,7 +224,7 @@ export const MAFAT1: React.FC<MAFAT1Props> = ({
           text={problem}
           duration={problemDuration}
           fontFamily={theme.body.fontFamily}
-          fontWeight={theme.body.fontWeight as any}
+          fontWeight={theme.body.fontWeight}
           typewriter={true}
         />
       </Sequence>
@@ -234,7 +234,7 @@ export const MAFAT1: React.FC<MAFAT1Props> = ({
           text={solution}
           duration={solutionDuration}
           fontFamily={theme.body.fontFamily}
-          fontWeight={theme.body.fontWeight as any}
+          fontWeight={theme.body.fontWeight}
           typewriter={false}
         />
       </Sequence>
@@ -244,7 +244,7 @@ export const MAFAT1: React.FC<MAFAT1Props> = ({
           text={cta}
           duration={ctaDuration}
           fontFamily={theme.body.fontFamily}
-          fontWeight={theme.body.fontWeight as any}
+          fontWeight={theme.body.fontWeight}
           typewriter={true}
         />
       </Sequence>

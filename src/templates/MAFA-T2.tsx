@@ -137,7 +137,7 @@ const DynamicMessage: React.FC<{ text: string; duration: number }> = ({ text, du
                         fontFamily: theme.body.fontFamily,
                         fontSize: getFontSize(text.length),
                         color: "white",
-                        fontWeight: theme.body.fontWeight as any,
+                        fontWeight: theme.body.fontWeight,
                         lineHeight: "1.4",
                         textShadow: "0px 2px 8px rgba(0,0,0,0.6)",
                         margin: 0,
@@ -259,7 +259,7 @@ export const MAFAT2: React.FC<MAFAT2Props> = ({
                     duration={hookDuration}
                     noFadeIn={true}
                     fontFamily={theme.hook.fontFamily}
-                    fontWeight={theme.hook.fontWeight as any}
+                    fontWeight={theme.hook.fontWeight}
                     letterSpacing={theme.hook.letterSpacing}
                 >
                     <div style={{ fontSize: "140px" }}>📖</div>

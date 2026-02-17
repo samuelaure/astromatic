@@ -3,16 +3,18 @@ import { loadFont as loadRaleway } from "@remotion/google-fonts/Raleway";
 import { loadFont as loadPlayfair } from "@remotion/google-fonts/PlayfairDisplay";
 // import { loadFont as loadCinzel } from "@remotion/google-fonts/Cinzel";
 
+import React from "react";
+
 export interface BrandTheme {
     hook: {
         fontFamily: string;
-        fontWeight: string;
+        fontWeight: React.CSSProperties["fontWeight"];
         letterSpacing: string;
         fontSize?: string;
     };
     body: {
         fontFamily: string;
-        fontWeight: string;
+        fontWeight: React.CSSProperties["fontWeight"];
         letterSpacing: string;
     };
     overlay: {
@@ -74,5 +76,9 @@ export const THEMES: Record<"asfa" | "mafa", BrandTheme> = {
 };
 
 export function getThemeByBrand(brandId: string): BrandTheme {
-    return (THEMES as any)[brandId] || THEMES.asfa;
+    const id = brandId.toLowerCase();
+    if (id === "mafa" || id === "asfa") {
+        return THEMES[id];
+    }
+    return THEMES.asfa;
 }
