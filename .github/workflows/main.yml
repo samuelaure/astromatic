@@ -12,113 +12,107 @@ on:
           - all
           - asfa-t1
           - asfa-t2
+          - mafa-t1
+          - mafa-t2
   schedule:
-    - cron: '0 10 * * *' # Runs at 11:00 AM CET (10:00 UTC)
-    - cron: '0 17 * * *' # Runs at 18:00 PM CET (17:00 UTC)
+    - cron: '0 8 * * *'  # Runs at 9:00 AM CET (MAFA T1)
+    - cron: '0 10 * * *' # Runs at 11:00 AM CET (ASFA T1)
+    - cron: '0 15 * * *' # Runs at 16:00 PM CET (MAFA T2)
+    - cron: '0 17 * * *' # Runs at 18:00 PM CET (ASFA T2)
+
+env:
+  # Shared Secrets for all jobs
+  AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+  AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+  AIRTABLE_ASFA_T1_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T1_TABLE_ID }}
+  AIRTABLE_ASFA_T2_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T2_TABLE_ID }}
+  AIRTABLE_MAFA_T1_TABLE_ID: ${{ secrets.AIRTABLE_MAFA_T1_TABLE_ID }}
+  AIRTABLE_MAFA_T2_TABLE_ID: ${{ secrets.AIRTABLE_MAFA_T2_TABLE_ID }}
+  
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+  R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+  R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+  
+  IG_TOKEN: ${{ secrets.IG_TOKEN }}
+  IG_USER_ID: ${{ secrets.IG_USER_ID }}
+  IG_MAFA_USER_ID: ${{ secrets.IG_MAFA_USER_ID }}
+  
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  
+  NODE_ENV: production
 
 jobs:
-  morning_t1_cycle:
+  mafa_t1_cycle:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'mafa-t1' || github.event.inputs.template == 'all'))
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+      - run: npx remotion browser ensure
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
+      - run: npx tsx src/main.ts mafa-t1
+
+  asfa_t1_cycle:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'schedule' && github.event.schedule == '0 10 * * *') ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'asfa-t1' || github.event.inputs.template == 'all'))
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Install Remotion Browser (Chromium)
-        run: npx remotion browser ensure
-
-      - name: Install System Dependencies for Headless Chrome
-        run: |
+      - run: npm install
+      - run: npx remotion browser ensure
+      - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
+      - run: npx tsx src/main.ts asfa-t1
 
-      - name: Run Automation Cycle (ASFA T1)
-        env:
-          # Airtable
-          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-          AIRTABLE_ASFA_T1_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T1_TABLE_ID }}
-          AIRTABLE_ASFA_T2_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T2_TABLE_ID }}
-          
-          # Cloudflare R2
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-          
-          # Instagram
-          IG_TOKEN: ${{ secrets.IG_TOKEN }}
-          IG_USER_ID: ${{ secrets.IG_USER_ID }}
-          
-          # Telegram (Notifications)
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          
-          NODE_ENV: production
-        run: npx tsx src/main.ts asfa-t1
+  mafa_t2_cycle:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 15 * * *') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'mafa-t2' || github.event.inputs.template == 'all'))
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+      - run: npx remotion browser ensure
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
+      - run: npx tsx src/main.ts mafa-t2
 
-  evening_t2_cycle:
+  asfa_t2_cycle:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'schedule' && github.event.schedule == '0 17 * * *') ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.template == 'asfa-t2' || github.event.inputs.template == 'all'))
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Install Remotion Browser (Chromium)
-        run: npx remotion browser ensure
-
-      - name: Install System Dependencies for Headless Chrome
-        run: |
+      - run: npm install
+      - run: npx remotion browser ensure
+      - run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
-
-      - name: Run Automation Cycle (ASFA T2)
-        env:
-          # Airtable
-          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-          AIRTABLE_ASFA_T1_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T1_TABLE_ID }}
-          AIRTABLE_ASFA_T2_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T2_TABLE_ID }}
-          
-          # Cloudflare R2
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-          
-          # Instagram
-          IG_TOKEN: ${{ secrets.IG_TOKEN }}
-          IG_USER_ID: ${{ secrets.IG_USER_ID }}
-          
-          # Telegram (Notifications)
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          
-          NODE_ENV: production
-        run: npx tsx src/main.ts asfa-t2
+      - run: npx tsx src/main.ts asfa-t2
