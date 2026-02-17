@@ -14,6 +14,14 @@ const bootstrap = async () => {
             id: "asfa-t2",
             tableId: env.AIRTABLE_ASFA_T2_TABLE_ID,
         },
+        "mafa-t1": {
+            id: "mafa-t1",
+            tableId: env.AIRTABLE_MAFA_T1_TABLE_ID || "",
+        },
+        "mafa-t2": {
+            id: "mafa-t2",
+            tableId: env.AIRTABLE_MAFA_T2_TABLE_ID || "",
+        },
     };
 
     const activeConfig = configs[templateArg];
