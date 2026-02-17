@@ -22,10 +22,19 @@ const envSchema = z.object({
     AIRTABLE_ASFA_T2_TABLE_ID: z
         .preprocess((val) => (val === "" ? undefined : val), z.string())
         .default("tblkTYpwfm3aLzKER"),
+    AIRTABLE_MAFA_T1_TABLE_ID: z
+        .preprocess((val) => (val === "" ? undefined : val), z.string())
+        .default("tbl5Pry2tfD6ducvM"),
+    AIRTABLE_MAFA_T2_TABLE_ID: z
+        .preprocess((val) => (val === "" ? undefined : val), z.string())
+        .default("tblWyzOMj8VeCD1Qi"),
 
     // Instagram
     IG_TOKEN: z.string(),
     IG_USER_ID: z.string(),
+    IG_MAFA_USER_ID: z
+        .preprocess((val) => (val === "" ? undefined : val), z.string())
+        .default("930658543468811"),
 
     // Telegram (Optional)
     TELEGRAM_BOT_TOKEN: z.string().optional(),
