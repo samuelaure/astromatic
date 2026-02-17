@@ -55,7 +55,7 @@ export async function fetchApprovedRecord(
             const fields = record.fields as Fields;
 
             const sequences: Record<string, string> =
-                templateId === "asfa-t1"
+                templateId.endsWith("-t1")
                     ? {
                         hook: fields.text_1_hook || "",
                         problem: fields.text_2_problem || "",

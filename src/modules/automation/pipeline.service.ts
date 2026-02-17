@@ -15,6 +15,7 @@ import {
     MAX_BACKGROUND_AUDIOS
 } from "../shared/constants.ts";
 import { PipelineError, RenderingError } from "../shared/errors.ts";
+import { BrandConfig, getBrandFromTemplateId } from "../shared/brands.ts";
 
 export interface PipelineConfig {
     templateId: string;
@@ -38,12 +39,15 @@ export interface PipelineAssets {
 export class PipelineService {
     protected readonly entryPath = path.resolve("src/index.ts");
     protected readonly outputPath = path.resolve("out/video.mp4");
+    protected readonly brand: BrandConfig;
 
-    constructor(protected readonly config: PipelineConfig) { }
+    constructor(protected readonly config: PipelineConfig) {
+        this.brand = getBrandFromTemplateId(config.templateId);
+    }
 
     public async execute(): Promise<void> {
         logger.info(
-            { templateId: this.config.templateId },
+            { templateId: this.config.templateId, brand: this.brand.id },
             "🚀 Astromatic: Starting automation cycle..."
         );
 
@@ -62,7 +66,11 @@ export class PipelineService {
             const publicUrl = await this.renderAndUpload(payload, assets);
 
             // 5. Distribution
-            const postLink = await publishToInstagram(publicUrl, payload.caption);
+            const postLink = await publishToInstagram(
+                publicUrl,
+                payload.caption,
+                this.brand.igUserId
+            );
             logger.info({ postLink }, "Published to Instagram successfully.");
 
             // 6. Finalize
@@ -126,8 +134,8 @@ export class PipelineService {
         const pad = (n: number) => String(n).padStart(4, "0");
         const r2BaseUrl = env.R2_PUBLIC_URL.replace(/\/$/, "");
 
-        const bg1Url = `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`;
-        const bg2Url = `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`;
+        const bg1Url = `${r2BaseUrl}/${this.brand.r2Folder}/videos/${this.brand.prefix.video}${pad(videoIndex1)}.mp4`;
+        const bg2Url = `${r2BaseUrl}/${this.brand.r2Folder}/videos/${this.brand.prefix.video}${pad(videoIndex2)}.mp4`;
 
         logger.info("Fetching video metadata for smart looping...");
         const [video1Duration, video2Duration] = await Promise.all([
@@ -143,9 +151,9 @@ export class PipelineService {
             musicIndex,
             r2BaseUrl,
             names: {
-                vid1: `ASFA_VID_${pad(videoIndex1)}`,
-                vid2: `ASFA_VID_${pad(videoIndex2)}`,
-                aud: `ASFA_AUD_${pad(musicIndex)}`
+                vid1: `${this.brand.prefix.video}${pad(videoIndex1)}`,
+                vid2: `${this.brand.prefix.video}${pad(videoIndex2)}`,
+                aud: `${this.brand.prefix.audio}${pad(musicIndex)}`
             }
         };
     }
@@ -187,7 +195,7 @@ export class PipelineService {
             .split(".")[0]
             .replace(/(\d{8})(\d{6})/, "$1_$2");
 
-        const remoteKey = `AstrologiaFamiliar/outputs/ASFA_OUTPUT_${timestamp}.mp4`;
+        const remoteKey = `${this.brand.r2Folder}/outputs/${this.brand.id.toUpperCase()}_OUTPUT_${timestamp}.mp4`;
         return uploadToR2(this.outputPath, remoteKey);
     }
 

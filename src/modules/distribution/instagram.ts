@@ -47,16 +47,17 @@ async function waitForMediaProcessing(
 
 export async function publishToInstagram(
     videoUrl: string,
-    caption: string
+    caption: string,
+    igUserId: string = env.IG_USER_ID
 ): Promise<string> {
-    const { IG_TOKEN, IG_USER_ID } = env;
+    const { IG_TOKEN } = env;
 
     return withRetry(async () => {
         try {
             // 1. Create Media Container
             logger.info("Creating Instagram media container...");
             const container = await axios.post(
-                `https://graph.facebook.com/v24.0/${IG_USER_ID}/media`,
+                `https://graph.facebook.com/v24.0/${igUserId}/media`,
                 null,
                 {
                     params: {
@@ -78,7 +79,7 @@ export async function publishToInstagram(
             // 3. Publish
             logger.info("Publishing media...");
             const publishResponse = await axios.post(
-                `https://graph.facebook.com/v24.0/${IG_USER_ID}/media_publish`,
+                `https://graph.facebook.com/v24.0/${igUserId}/media_publish`,
                 null,
                 {
                     params: {
