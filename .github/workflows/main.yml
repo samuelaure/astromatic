@@ -22,6 +22,7 @@ on:
 
 env:
   # Shared Secrets for all jobs
+  # NODE_ENV will be set per job if needed, but we keep the other shared secrets here
   AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
   AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
   AIRTABLE_ASFA_T1_TABLE_ID: ${{ secrets.AIRTABLE_ASFA_T1_TABLE_ID }}
@@ -41,8 +42,6 @@ env:
   
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-  
-  NODE_ENV: production
 
 jobs:
   mafa_t1_cycle:
@@ -57,11 +56,13 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm install --include=dev
-      - run: npx @remotion/cli browser ensure
+      - run: npm run remotion -- browser ensure
       - run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
-      - run: npx tsx src/main.ts mafa-t1
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64 || sudo apt-get install -y libasound2
+      - run: npm start -- mafa-t1
+        env:
+          NODE_ENV: production
 
   asfa_t1_cycle:
     runs-on: ubuntu-latest
@@ -75,11 +76,13 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm install --include=dev
-      - run: npx @remotion/cli browser ensure
+      - run: npm run remotion -- browser ensure
       - run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
-      - run: npx tsx src/main.ts asfa-t1
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64 || sudo apt-get install -y libasound2
+      - run: npm start -- asfa-t1
+        env:
+          NODE_ENV: production
 
   mafa_t2_cycle:
     runs-on: ubuntu-latest
@@ -93,11 +96,13 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm install --include=dev
-      - run: npx @remotion/cli browser ensure
+      - run: npm run remotion -- browser ensure
       - run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
-      - run: npx tsx src/main.ts mafa-t2
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64 || sudo apt-get install -y libasound2
+      - run: npm start -- mafa-t2
+        env:
+          NODE_ENV: production
 
   asfa_t2_cycle:
     runs-on: ubuntu-latest
@@ -111,8 +116,10 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm install --include=dev
-      - run: npx @remotion/cli browser ensure
+      - run: npm run remotion -- browser ensure
       - run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64
-      - run: npx tsx src/main.ts asfa-t2
+          sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libasound2t64 || sudo apt-get install -y libasound2
+      - run: npm start -- asfa-t2
+        env:
+          NODE_ENV: production
