@@ -9,7 +9,10 @@ import {
   Loop,
   Audio,
 } from "remotion";
-import { calculateSequenceDuration, TAIL_FRAMES } from "../modules/rendering/utils.ts";
+import {
+  calculateSequenceDuration,
+  TAIL_FRAMES,
+} from "../modules/rendering/utils.ts";
 import { getThemeByBrand } from "../modules/shared/themes.ts";
 import React from "react";
 
@@ -39,10 +42,10 @@ const SimpleText: React.FC<SimpleTextProps> = ({
   const typingDuration = Math.min(30, duration - 20);
   const charsToShow = typewriter
     ? Math.floor(
-      interpolate(frame, [0, typingDuration], [0, text.length], {
-        extrapolateRight: "clamp",
-      }),
-    )
+        interpolate(frame, [0, typingDuration], [0, text.length], {
+          extrapolateRight: "clamp",
+        }),
+      )
     : text.length;
 
   const hasInstantStart = typewriter || noFadeIn;
@@ -101,15 +104,18 @@ export interface ASFAT1Props {
     solution: string;
     cta: string;
   };
-  videoIndex1?: number;
-  videoIndex2?: number;
+  bg1Url?: string;
+  bg2Url?: string;
+  musicUrl?: string;
   video1Duration?: number;
   video2Duration?: number;
-  musicIndex?: number;
-  r2BaseUrl?: string;
 }
 
-const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
+const SmartVideo: React.FC<{
+  src: string;
+  videoDuration: number;
+  fillDuration: number;
+}> = ({ src, videoDuration, fillDuration }) => {
   const vDuration = Math.round(videoDuration);
   const fDuration = Math.round(fillDuration);
 
@@ -135,12 +141,11 @@ const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: n
 
 export const ASFAT1: React.FC<ASFAT1Props> = ({
   sequences,
-  videoIndex1 = 1,
-  videoIndex2 = 2,
+  bg1Url = staticFile("background_videos/astro-background-video-1.mp4"),
+  bg2Url = staticFile("background_videos/astro-background-video-2.mp4"),
+  musicUrl = staticFile("background_music/astro-background-music-1.mp3"),
   video1Duration = 0,
   video2Duration = 0,
-  musicIndex = 1,
-  r2BaseUrl = "",
 }) => {
   const { hook, problem, solution, cta } = sequences;
   const { durationInFrames } = useVideoConfig();
@@ -157,19 +162,9 @@ export const ASFAT1: React.FC<ASFAT1Props> = ({
   const fill1 = t2;
   const fill2 = durationInFrames - t2;
 
-  const pad = (n: number) => String(n).padStart(4, "0");
-
-  const bg1 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
-    : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
-
-  const bg2 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
-    : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
-
-  const music = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
-    : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
+  const bg1 = bg1Url;
+  const bg2 = bg2Url;
+  const music = musicUrl;
 
   return (
     <AbsoluteFill>

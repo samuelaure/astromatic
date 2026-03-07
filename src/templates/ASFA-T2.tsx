@@ -91,7 +91,10 @@ const SimpleText: React.FC<SimpleTextProps> = ({
   );
 };
 
-const DynamicMessage: React.FC<{ text: string; duration: number }> = ({ text, duration }) => {
+const DynamicMessage: React.FC<{ text: string; duration: number }> = ({
+  text,
+  duration,
+}) => {
   const frame = useCurrentFrame();
 
   const getFontSize = (len: number) => {
@@ -156,15 +159,18 @@ export interface ASFAT2Props {
     hook: string;
     message: string;
   };
-  videoIndex1?: number;
-  videoIndex2?: number;
+  bg1Url?: string;
+  bg2Url?: string;
+  musicUrl?: string;
   video1Duration?: number;
   video2Duration?: number;
-  musicIndex?: number;
-  r2BaseUrl?: string;
 }
 
-const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: number }> = ({ src, videoDuration, fillDuration }) => {
+const SmartVideo: React.FC<{
+  src: string;
+  videoDuration: number;
+  fillDuration: number;
+}> = ({ src, videoDuration, fillDuration }) => {
   const vDuration = Math.round(videoDuration);
   const fDuration = Math.round(fillDuration);
 
@@ -190,12 +196,11 @@ const SmartVideo: React.FC<{ src: string; videoDuration: number; fillDuration: n
 
 export const ASFAT2: React.FC<ASFAT2Props> = ({
   sequences,
-  videoIndex1 = 1,
-  videoIndex2 = 2,
+  bg1Url = staticFile("background_videos/astro-background-video-1.mp4"),
+  bg2Url = staticFile("background_videos/astro-background-video-2.mp4"),
+  musicUrl = staticFile("background_music/astro-background-music-1.mp3"),
   video1Duration = 0,
   video2Duration = 0,
-  musicIndex = 1,
-  r2BaseUrl = "",
 }) => {
   const { hook, message } = sequences;
   const { durationInFrames } = useVideoConfig();
@@ -203,19 +208,9 @@ export const ASFAT2: React.FC<ASFAT2Props> = ({
   const hookDuration = calculateSequenceDuration(hook);
   const messageDuration = durationInFrames - hookDuration;
 
-  const pad = (n: number) => String(n).padStart(4, "0");
-
-  const bg1 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex1)}.mp4`
-    : staticFile(`background_videos/astro-background-video-${videoIndex1}.mp4`);
-
-  const bg2 = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/videos/ASFA_VID_${pad(videoIndex2)}.mp4`
-    : staticFile(`background_videos/astro-background-video-${videoIndex2}.mp4`);
-
-  const music = r2BaseUrl
-    ? `${r2BaseUrl}/AstrologiaFamiliar/audios/ASFA_AUD_${pad(musicIndex)}.m4a`
-    : staticFile(`background_music/astro-background-music-${musicIndex}.mp3`);
+  const bg1 = bg1Url;
+  const bg2 = bg2Url;
+  const music = musicUrl;
 
   return (
     <AbsoluteFill>
