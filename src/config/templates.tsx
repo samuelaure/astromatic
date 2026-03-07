@@ -4,7 +4,9 @@ import { ASFAT2, ASFAT2Props } from "../templates/ASFA-T2.tsx";
 import { MAFAT1, MAFAT1Props } from "../templates/MAFA-T1.tsx";
 import { MAFAT2, MAFAT2Props } from "../templates/MAFA-T2.tsx";
 
-type TemplateProps = (ASFAT1Props | ASFAT2Props | MAFAT1Props | MAFAT2Props) & { templateId: string };
+type TemplateProps = (ASFAT1Props | ASFAT2Props | MAFAT1Props | MAFAT2Props) & {
+  templateId: string;
+};
 
 export const TemplateRegistry: React.FC<TemplateProps> = (props) => {
   const { templateId } = props;

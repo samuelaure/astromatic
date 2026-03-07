@@ -5,31 +5,32 @@ import { INITIAL_RETRY_DELAY_MS, MAX_RETRY_ATTEMPTS } from "./constants.ts";
  * Executes a function with exponential backoff retry logic.
  */
 export async function withRetry<T>(
-    fn: () => Promise<T>,
-    context: string,
-    attempts: number = MAX_RETRY_ATTEMPTS
+  fn: () => Promise<T>,
+  context: string,
+  attempts: number = MAX_RETRY_ATTEMPTS,
 ): Promise<T> {
-    let lastError: unknown;
-    let delay = INITIAL_RETRY_DELAY_MS;
+  let lastError: unknown;
+  let delay = INITIAL_RETRY_DELAY_MS;
 
-    for (let i = 0; i < attempts; i++) {
-        try {
-            return await fn();
-        } catch (error: unknown) {
-            lastError = error;
-            const isLastAttempt = i === attempts - 1;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (error: unknown) {
+      lastError = error;
+      const isLastAttempt = i === attempts - 1;
 
-            if (!isLastAttempt) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                logger.warn(
-                    { context, attempt: i + 1, nextDelay: delay, err: errorMessage },
-                    "Operation failed, retrying..."
-                );
-                await new Promise((resolve) => setTimeout(resolve, delay));
-                delay *= 2; // Exponential backoff
-            }
-        }
+      if (!isLastAttempt) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        logger.warn(
+          { context, attempt: i + 1, nextDelay: delay, err: errorMessage },
+          "Operation failed, retrying...",
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2; // Exponential backoff
+      }
     }
+  }
 
-    throw lastError;
+  throw lastError;
 }
