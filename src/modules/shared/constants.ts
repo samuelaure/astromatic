@@ -15,12 +15,6 @@ export const MAX_SEQUENCE_FRAMES = 270;
 export const FALLBACK_VIDEO_DURATION_FRAMES = 450; // 15 seconds
 
 /**
- * Asset Selection Constants
- */
-export const MAX_BACKGROUND_VIDEOS = 28;
-export const MAX_BACKGROUND_AUDIOS = 10;
-
-/**
  * Distribution Constants
  */
 export const INSTAGRAM_POLL_RETRIES = 10;
